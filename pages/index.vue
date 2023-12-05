@@ -25,7 +25,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      lastQrCreationTime: 0, 
+      lastQrCreationTime: 0,
       dataCard: {
         cardSatu: {
           id: "virtualaccount",
@@ -43,6 +43,7 @@ export default {
           icon: "mdi mdi-wallet",
         },
       },
+      model: 'Leider',
     };
   },
   methods: {
@@ -67,9 +68,7 @@ export default {
             console.error("Error creating QR code:", error);
           });
       } else {
-        alert(
-          "Please wait for 5 minutes before creating another QR code."
-        );
+        alert("Please wait for 5 minutes before creating another QR code.");
       }
     },
   },
