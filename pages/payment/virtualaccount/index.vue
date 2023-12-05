@@ -30,7 +30,7 @@ onMounted(getBank);
 async function getBank() {
   try {
     isLoading.value = true;
-    const response = await axios.get("https://2037-2001-448a-2082-4433-cd47-1301-6e3e-3bab.ngrok-free.app/payment/bank");
+    const response = await axios.get("http://127.0.0.1:3001/payment/bank");
     bank.value = response.data;
   } catch (error) {
     console.error("Error fetching bank data:", error);

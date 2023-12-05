@@ -56,7 +56,7 @@ export default {
 
       if (currentTime - lastQrCreationTime >= 5 * 60 * 1000) {
         axios
-          .post("https://2037-2001-448a-2082-4433-cd47-1301-6e3e-3bab.ngrok-free.app/payment/qrcode", {})
+          .post("http://127.0.0.1:3001/payment/qrcode", {})
           .then((response) => {
             this.$router.push("/payment/qrcode");
             console.log(response);
