@@ -1,6 +1,8 @@
 <template>
   <v-container class="pt-5">
-    <p class="text-caption"><b> Masukkan nomor yang terdaftar di DANA </b></p>
+    <p class="text-caption">
+      <b> Masukkan nomor yang terdaftar di {{ idFromParams }} </b>
+    </p>
     <v-responsive
       class="mt-5 mx-auto mb-5"
       max-width="344"
@@ -9,7 +11,7 @@
       <v-text-field
         clearable
         hide-details="auto"
-        label="Nomor Dana"
+        :label="'Nomor ' + this.idFromParams"
       ></v-text-field>
     </v-responsive>
     <ol>
@@ -18,6 +20,7 @@
       </li>
     </ol>
     <v-btn
+      @click="handlePay"
       color="indigo"
       text="lanjutkan"
       width="500"
@@ -27,6 +30,7 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data: () => ({
     items: [
@@ -38,5 +42,19 @@ export default {
       },
     ],
   }),
+  computed: {
+    idFromParams() {
+      return this.$route.params.idChannel[0];
+    },
+  },
+  methods: {
+    handlePay() {
+      axios
+        .post("http://127.0.0.1:3001/payment/ewallet", {})
+        .then((response) => {
+          console.log(response);
+        });
+    },
+  },
 };
 </script>

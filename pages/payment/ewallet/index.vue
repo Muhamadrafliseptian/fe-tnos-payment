@@ -10,7 +10,7 @@
       :Title="data.channel_name"
       :key="data.id_ewallet"
       class="mb-3"
-      @click="handleRoute(data.channel_name)"
+      @click="handleRoute(data.channel_code)"
     />
   </template>
 </template>
@@ -44,7 +44,7 @@ export default {
       }
     },
     handleRoute(id) {
-      this.$router.push(`/payment/ewallet/${id}`);
+      this.$router.push(`/payment/ewallet/channel/${id}`);
     },
   },
 };
