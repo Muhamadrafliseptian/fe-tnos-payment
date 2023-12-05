@@ -21,32 +21,57 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
-  data(){
+  data() {
     return {
+      lastQrCreationTime: 0, 
       dataCard: {
         cardSatu: {
-          id: 'virtualaccount',
-          title: 'Virtual Account',
-          icon: 'mdi mdi-bank-circle-outline',
+          id: "virtualaccount",
+          title: "Virtual Account",
+          icon: "mdi mdi-bank-circle-outline",
         },
         cardDua: {
-          id: 'qrcode',
-          title: 'QRIS',
-          icon: 'mdi mdi-qrcode',
+          id: "qrcode",
+          title: "QRIS",
+          icon: "mdi mdi-qrcode",
         },
         cardTiga: {
-          id: 'ewallet',
-          title: 'E-Wallet',
-          icon: 'mdi mdi-wallet',
+          id: "ewallet",
+          title: "E-Wallet",
+          icon: "mdi mdi-wallet",
         },
-      }
-    }
+      },
+    };
   },
   methods: {
     postClick(id) {
-      this.$router.push(`/payment/${id}`)
-    }
-  }
-}
+      this.$router.push(`/payment/${id}`);
+    },
+    createPaymentQr() {
+      const lastQrCreationTime =
+        parseInt(localStorage.getItem("lastQrCreationTime")) || 0;
+      const currentTime = Date.now();
+
+      if (currentTime - lastQrCreationTime >= 5 * 60 * 1000) {
+        axios
+          .post("http://127.0.0.1:3001/payment/qrcode", {})
+          .then((response) => {
+            this.$router.push("/payment/qrcode");
+            console.log(response);
+
+            localStorage.setItem("lastQrCreationTime", currentTime.toString());
+          })
+          .catch((error) => {
+            console.error("Error creating QR code:", error);
+          });
+      } else {
+        alert(
+          "Please wait for 5 minutes before creating another QR code."
+        );
+      }
+    },
+  },
+};
 </script>
