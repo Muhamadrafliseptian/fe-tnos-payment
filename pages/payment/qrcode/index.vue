@@ -1,14 +1,16 @@
 <template>
   <v-container>
-    <v-btn @click="createPaymentQr"> bayar </v-btn>
+    <v-btn @click="createPaymentQr" hidden> bayar </v-btn>
     <h6>Qr Code</h6>
     <v-card class="rounded-pill" color="grey-lighten-4">
       <v-card-text class="ms-3">
         <p class="mb-0">
-          <b class="text-secondary" color="grey">Finish Before</b>
+          <b class="text-secondary" color="grey">Sisa Waktu Pembayaran Anda</b>
         </p>
-        <p class="mb-0">
-          <b>12, Desember 2023, (20:51)</b>
+        <p class="mb-0" id="countdown" v-if="expiresAt">
+          <b>
+            {{ countdownDisplay }}
+          </b>
         </p>
       </v-card-text>
     </v-card>
@@ -20,7 +22,7 @@
           </v-col>
           <v-col>
             <v-img
-              :src="logoGpn"
+              :src="logoGpN"
               :width="50"
               class="mt-5 ms-5"
               :height="50"
@@ -67,6 +69,7 @@
 </template>
 
 <script>
+import CryptoJS from "crypto-js";
 import axios from "axios";
 import LogoQris from "../../assets/images/qris.png";
 import LogoGpn from "../../assets/images/gpn.png";
@@ -79,30 +82,83 @@ export default {
       logoQris: LogoQris,
       logoGpN: LogoGpn,
       qrCode: QrCode,
+      expiresAt: null,
+      countdown: null,
     };
   },
+  computed: {
+    countdownDisplay() {
+      if (!this.expiresAt) return "";
+
+      const now = new Date();
+      const expirationDate = new Date(this.expiresAt);
+      const timeDifference = expirationDate - now;
+
+      if (timeDifference <= 0) {
+        // Countdown expired
+        clearInterval(this.countdown);
+        return "Countdown expired";
+      }
+
+      const seconds = Math.floor(timeDifference / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+
+      return `${minutes} menit ${remainingSeconds} detik lagi`;
+    },
+  },
   methods: {
+    startCountdown() {
+      this.countdown = setInterval(() => {
+        this.$set(this, 'countdown', this.countdown - 1);
+      }, 1000);
+    },
     createPaymentQr() {
       const lastQrCreationTime =
         parseInt(localStorage.getItem("lastQrCreationTime")) || 0;
       const currentTime = Date.now();
+      const secretKey = "secret-key";
 
       if (currentTime - lastQrCreationTime >= 5 * 60 * 1000) {
         axios
           .post("http://127.0.0.1:3001/payment/qrcode", {})
           .then((response) => {
             this.$router.push("/payment/qrcode");
-            console.log(response);
 
-            localStorage.setItem("lastQrCreationTime", currentTime.toString());
+            this.expiresAt =
+              response.data.payment_method.qr_code.channel_properties
+                .expires_at;
+
+            localStorage.setItem("expiresAt", this.expiresAt);
+
+            this.startCountdown();
+
+            localStorage.setItem(
+              "lastQrCreationTime",
+              currentTime.toString()
+            );
           })
           .catch((error) => {
             console.error("Error creating QR code:", error);
           });
       } else {
-        alert("Please wait for 5 minutes before creating another QR code.");
+        alert(
+          "Please wait for 5 minutes before creating another QR code."
+        );
       }
     },
+  },
+  created() {
+    if (process.client) {
+      this.expiresAt = localStorage.getItem("expiresAt");
+
+      if (this.expiresAt) {
+        this.startCountdown();
+      }
+    }
+  },
+  beforeDestroy() {
+    clearInterval(this.countdown);
   },
 };
 </script>

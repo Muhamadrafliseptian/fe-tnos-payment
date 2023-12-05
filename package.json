@@ -21,6 +21,7 @@
     "@chenfengyuan/vue-countdown": "^2.1.2",
     "@mdi/font": "^7.3.67",
     "axios": "^1.6.2",
+    "crypto-js": "^4.2.0",
     "nuxt-sweetalert2": "^1.0.0",
     "pinia": "^2.1.7"
   }
