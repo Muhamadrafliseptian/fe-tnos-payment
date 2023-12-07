@@ -6,71 +6,44 @@
   </v-row>
   <div class="mt-4">
     <h6>Metode Pembayaran</h6>
-    <div v-for="data in dataCard">
+    <div v-for="datas in data[0]">
       <CardPaymentMethod
-        :Title="data.title"
+        :Title="datas.title"
         Saldo="lorem ipsum dolor sit amet"
         Color="grey-lighten-4"
         Elevation="3"
         class="mt-5"
         Rounded="rounded-lg"
-        :IconKiri="data.icon"
-        @click="postClick(data.id)"
+        :IconKiri="datas.icon"
+        @click="postClick(datas.id)"
       />
     </div>
   </div>
 </template>
-<script>
-import axios from "axios";
-export default {
-  data() {
-    return {
-      lastQrCreationTime: 0,
-      dataCard: {
-        cardSatu: {
-          id: "virtualaccount",
-          title: "Virtual Account",
-          icon: "mdi mdi-bank-circle-outline",
-        },
-        cardDua: {
-          id: "qrcode",
-          title: "QRIS",
-          icon: "mdi mdi-qrcode",
-        },
-        cardTiga: {
-          id: "ewallet",
-          title: "E-Wallet",
-          icon: "mdi mdi-wallet",
-        },
-      },
-      model: 'Leider',
-    };
-  },
-  methods: {
-    postClick(id) {
-      this.$router.push(`/payment/${id}`);
+<script setup>
+const router = useRouter();
+
+const data = [
+  {
+    cardSatu: {
+      id: "virtualaccount",
+      title: "Virtual Account",
+      icon: "mdi mdi-bank-circle-outline",
     },
-    createPaymentQr() {
-      const lastQrCreationTime =
-        parseInt(localStorage.getItem("lastQrCreationTime")) || 0;
-      const currentTime = Date.now();
-
-      if (currentTime - lastQrCreationTime >= 5 * 60 * 1000) {
-        axios
-          .post("http://127.0.0.1:3001/payment/qrcode", {})
-          .then((response) => {
-            this.$router.push("/payment/qrcode");
-            console.log(response);
-
-            localStorage.setItem("lastQrCreationTime", currentTime.toString());
-          })
-          .catch((error) => {
-            console.error("Error creating QR code:", error);
-          });
-      } else {
-        alert("Please wait for 5 minutes before creating another QR code.");
-      }
+    cardDua: {
+      id: "qrcode",
+      title: "QRIS",
+      icon: "mdi mdi-qrcode",
+    },
+    cardTiga: {
+      id: "ewallet",
+      title: "E-Wallet",
+      icon: "mdi mdi-wallet",
     },
   },
+];
+
+const postClick = (id) => {
+  router.push(`/payment/${id}`);
 };
 </script>

@@ -24,6 +24,8 @@ import axios from "axios";
 const bank = ref([]);
 const isLoading = ref(false);
 const error = ref(null);
+const { $swal } = useNuxtApp();
+const router = useRouter()
 
 onMounted(getBank);
 
@@ -50,9 +52,18 @@ async function createVirtualAccount(id) {
     );
 
     if (response.data.error) {
-      alert(response.data.error.message);
+      $swal.fire({
+        title: "Galat!",
+        text: response.data.error.message,
+        icon: "error",
+      });
     } else {
-      this.$router.push(`/payment/virtualaccount/${id}`);
+      $swal.fire({
+        title: "Success!",
+        text: 'Berhasil buat VA',
+        icon: "success",
+      });
+      router.push(`/payment/virtualaccount/${id}`);
     }
   } catch (error) {
     console.error("Error creating virtual account:", error);

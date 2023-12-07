@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-btn @click="createPaymentQr" hidden> bayar </v-btn>
+    <v-btn @click="createPaymentQr"> bayar </v-btn>
     <h6>Qr Code</h6>
     <v-card class="rounded-pill" color="grey-lighten-4">
       <v-card-text class="ms-3">
@@ -39,29 +39,36 @@
       </v-container>
     </v-card>
     <div class="text-center mt-5">
-      <v-bottom-sheet>
-        <template v-slot:activator="{ props }">
-          <v-btn
-            v-bind="props"
-            text="Lihat cara pembayaran"
-            class="rounded-xl text-caption"
-            color="grey-lighten-3"
-          ></v-btn>
-        </template>
-        <v-card class="rounded-xl" title="Cara Transaksi Menggunakan QR Bayar">
-          <div class="p-2">
-            <ol>
-              <li>Pada halaman login atau beranda, pilih QR Bayar</li>
-              <li>Scan QRIS yang Anda ingin bayarkan</li>
-              <li>
-                Masukan nominal lalu pilih Rekening sumber yang di inginkan,
-                kemudian pilih Lanjutkan
-              </li>
-              <li>Konfirmasi Transaksi kemudian Lanjut Transfer</li>
-              <li>Masukkan Pin Aplikasi</li>
-              <li>Pembayaran Berhasil</li>
-            </ol>
-          </div>
+      <v-btn
+        @click="sheet = !sheet"
+        text="Lihat cara pembayaran"
+        class="rounded-xl text-caption"
+        color="blue-darken-4"
+      ></v-btn>
+      <v-bottom-sheet v-model="sheet">
+        <v-card class="rounded-xl">
+          <v-card-text>
+            <div class="text-center">
+              <v-icon
+                icon="mdi mdi-drag-horizontal-variant"
+                @click="sheet = !sheet"
+              ></v-icon>
+            </div>
+            <div class="p-2">
+              <h6>Cara Transaksi Menggunakan QR Bayar</h6>
+              <ol>
+                <li>Pada halaman login atau beranda, pilih QR Bayar</li>
+                <li>Scan QRIS yang Anda ingin bayarkan</li>
+                <li>
+                  Masukan nominal lalu pilih Rekening sumber yang di inginkan,
+                  kemudian pilih Lanjutkan
+                </li>
+                <li>Konfirmasi Transaksi kemudian Lanjut Transfer</li>
+                <li>Masukkan Pin Aplikasi</li>
+                <li>Pembayaran Berhasil</li>
+              </ol>
+            </div>
+          </v-card-text>
         </v-card>
       </v-bottom-sheet>
     </div>
@@ -84,22 +91,21 @@ export default {
       qrCode: QrCode,
       expiresAt: null,
       countdown: null,
+      sheet: false,
+      secretKey: "secret-key",
     };
   },
   computed: {
     countdownDisplay() {
       if (!this.expiresAt) return "";
-
       const now = new Date();
       const expirationDate = new Date(this.expiresAt);
       const timeDifference = expirationDate - now;
 
       if (timeDifference <= 0) {
-        // Countdown expired
         clearInterval(this.countdown);
         return "Countdown expired";
       }
-
       const seconds = Math.floor(timeDifference / 1000);
       const minutes = Math.floor(seconds / 60);
       const remainingSeconds = seconds % 60;
@@ -110,50 +116,57 @@ export default {
   methods: {
     startCountdown() {
       this.countdown = setInterval(() => {
-        this.$set(this, 'countdown', this.countdown - 1);
+        this.countdown = this.countdown - 1;
       }, 1000);
     },
     createPaymentQr() {
-      const lastQrCreationTime =
-        parseInt(localStorage.getItem("lastQrCreationTime")) || 0;
       const currentTime = Date.now();
-      const secretKey = "secret-key";
-
-      if (currentTime - lastQrCreationTime >= 5 * 60 * 1000) {
-        axios
-          .post("http://127.0.0.1:3001/payment/qrcode", {})
-          .then((response) => {
-            this.$router.push("/payment/qrcode");
-
-            this.expiresAt =
-              response.data.payment_method.qr_code.channel_properties
-                .expires_at;
-
-            localStorage.setItem("expiresAt", this.expiresAt);
-
-            this.startCountdown();
-
-            localStorage.setItem(
-              "lastQrCreationTime",
-              currentTime.toString()
-            );
-          })
-          .catch((error) => {
-            console.error("Error creating QR code:", error);
-          });
-      } else {
-        alert(
-          "Please wait for 5 minutes before creating another QR code."
-        );
+      if (this.countdown > 0) {
+        alert("Please wait for the current countdown to finish.");
+        return;
       }
+      axios
+        .post("http://127.0.0.1:3001/payment/qrcode", {})
+        .then((response) => {
+          this.$router.push("/payment/qrcode");
+          this.expiresAt =
+            response.data.expires_at;
+          localStorage.setItem(
+            "expiresAt",
+            CryptoJS.AES.encrypt(this.expiresAt, this.secretKey).toString()
+          );
+          localStorage.setItem(
+            "lastQrCreationTime",
+            CryptoJS.AES.encrypt(
+              currentTime.toString(),
+              this.secretKey
+            ).toString()
+          );
+          this.startCountdown();
+        })
+        .catch((error) => {
+          console.error("Error creating QR code:", error);
+        });
     },
   },
   created() {
     if (process.client) {
-      this.expiresAt = localStorage.getItem("expiresAt");
-
-      if (this.expiresAt) {
+      const encryptedExpiresAt = localStorage.getItem("expiresAt");
+      if (encryptedExpiresAt) {
+        this.expiresAt = CryptoJS.AES.decrypt(
+          encryptedExpiresAt,
+          this.secretKey
+        ).toString(CryptoJS.enc.Utf8);
         this.startCountdown();
+      }
+      const encryptedLastQrCreationTime =
+        localStorage.getItem("lastQrCreationTime");
+      if (encryptedLastQrCreationTime) {
+        const decryptedLastQrCreationTime = CryptoJS.AES.decrypt(
+          encryptedLastQrCreationTime,
+          this.secretKey
+        ).toString(CryptoJS.enc.Utf8);
+        this.lastQrCreationTime = parseInt(decryptedLastQrCreationTime) || 0;
       }
     }
   },

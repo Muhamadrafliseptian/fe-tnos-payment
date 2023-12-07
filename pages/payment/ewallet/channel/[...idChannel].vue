@@ -12,6 +12,7 @@
         clearable
         hide-details="auto"
         :label="'Nomor ' + this.idFromParams"
+        v-model="mobile_number"
       ></v-text-field>
     </v-responsive>
     <ol>
@@ -30,6 +31,8 @@
   </v-container>
 </template>
 <script>
+import CryptoJS from "crypto-js";
+
 import axios from "axios";
 export default {
   data: () => ({
@@ -41,19 +44,42 @@ export default {
         text: "Pastikan anda melakukan pembayaran dalam waktu 30 menit untuk menghindari pembatalan otomatis",
       },
     ],
+    mobile_number: "+6281411126356",
+    secretKey: "secret-key",
   }),
   computed: {
     idFromParams() {
       return this.$route.params.idChannel[0];
-    },
+    }
   },
   methods: {
-    handlePay() {
-      axios
-        .post("http://127.0.0.1:3001/payment/ewallet", {})
-        .then((response) => {
-          console.log(response);
-        });
+    async handlePay() {
+      try {
+        axios
+          .post("http://127.0.0.1:3001/payment/ewallet", {
+            channel_code: this.idFromParams,
+            mobile_number: this.mobile_number,
+          })
+          .then((response) => {
+            if (response.data.status == "PENDING") {
+              localStorage.setItem(
+                "redirectUrl",
+                CryptoJS.AES.encrypt(
+                  response.data.actions.desktop_web_checkout_url,
+                  this.secretKey
+                ).toString()
+              );
+              localStorage.setItem("chargeAmount", response.data.charge_amount);
+
+              console.log("berhasil buat payment ewallet");
+              this.$router.push(`/payment/ewallet/pay/${this.idFromParams}`);
+            } else {
+              console.log("error creating charge ewallet");
+            }
+          });
+      } catch (er) {
+        console.log(er);
+      }
     },
   },
 };
