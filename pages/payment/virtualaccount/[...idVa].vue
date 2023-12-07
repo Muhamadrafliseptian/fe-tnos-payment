@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -28,6 +29,22 @@ export default {
         "Pembayaran Berhasil",
       ],
     };
+  },
+  mounted(){
+    setInterval(() => {
+      this.getStatusLog()
+    }, 5000);
+  },
+  methods: {
+    async getStatusLog(){
+      try {
+        axios.get('http://localhost:3001/payment/tnos-dbsqgc/get').then((response)=>{
+          console.log(response.data.status);
+        })
+      } catch (er) {
+
+      }
+    }
   },
 };
 </script>

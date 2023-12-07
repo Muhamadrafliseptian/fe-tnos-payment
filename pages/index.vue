@@ -1,7 +1,7 @@
 <template>
   <v-row align="center" justify="center">
     <v-col>
-      <CardSaldo Title="Halo, Raflii" Saldo="Rp. 200.000" />
+      <CardSaldo Title="ID Pemesanan INV-123" Saldo="Rp. 200.000" />
     </v-col>
   </v-row>
   <div class="mt-4">

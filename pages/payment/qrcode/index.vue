@@ -1,15 +1,18 @@
 <template>
   <v-container>
-    <v-btn @click="createPaymentQr"> bayar </v-btn>
+    <h6>Status Pembayaran: {{ qrData.status }}</h6>
+    <v-btn @click="createPaymentQr" hidden> bayar </v-btn>
     <h6>Qr Code</h6>
     <v-card class="rounded-pill" color="grey-lighten-4">
       <v-card-text class="ms-3">
         <p class="mb-0">
-          <b class="text-secondary" color="grey">Sisa Waktu Pembayaran Anda</b>
+          <b class="text-secondary" color="grey"
+            >Selesaikan Pembayaran Anda Sebelum:</b
+          >
         </p>
-        <p class="mb-0" id="countdown" v-if="expiresAt">
+        <p class="mb-0" id="countdown">
           <b>
-            {{ countdownDisplay }}
+            {{ qrData.expiration_date_local }}
           </b>
         </p>
       </v-card-text>
@@ -93,6 +96,7 @@ export default {
       countdown: null,
       sheet: false,
       secretKey: "secret-key",
+      qrData: "",
     };
   },
   computed: {
@@ -129,8 +133,7 @@ export default {
         .post("http://127.0.0.1:3001/payment/qrcode", {})
         .then((response) => {
           this.$router.push("/payment/qrcode");
-          this.expiresAt =
-            response.data.expires_at;
+          this.expiresAt = response.data.expires_at;
           localStorage.setItem(
             "expiresAt",
             CryptoJS.AES.encrypt(this.expiresAt, this.secretKey).toString()
@@ -148,8 +151,36 @@ export default {
           console.error("Error creating QR code:", error);
         });
     },
+    async getStatusLog() {
+      try {
+        const response = await axios.get(
+          "http://localhost:3001/payment/tnos-dbsqgc/get"
+        );
+        const expirationDateUTC = new Date(response.data.expiration_date);
+
+        const options = { timeZone: "Asia/Jakarta" };
+        const expirationDateLocal = expirationDateUTC.toLocaleString(
+          "id-ID",
+          options
+        );
+
+        this.qrData = {
+          ...response.data,
+          expiration_date_local: expirationDateLocal,
+        };
+
+        if(response.data.status !== 'PAID'){
+          setTimeout(this.getStatusLog, 500000);
+        }
+
+      } catch (error) {
+        console.error("Error:", error);
+        setTimeout(this.getStatusLog, 5000);
+      }
+    },
   },
   created() {
+    this.getStatusLog();
     if (process.client) {
       const encryptedExpiresAt = localStorage.getItem("expiresAt");
       if (encryptedExpiresAt) {
