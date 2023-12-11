@@ -1,17 +1,23 @@
 <template>
   <div>
     <h6 class="mb-5">Bayar Dengan Virtual Account</h6>
-    <template v-for="data in vaStore.banks">
-      <div v-if="data.is_activated == true">
+    <template v-for="data in vaStore.banks" :key="data.id_ewallet">
+      <div v-if="data.is_activated">
         <CardBank
           :Subtitle="data.code"
           :Title="data.name"
-          :key="data.id_ewallet"
           @click="createVirtualAccount(data.code)"
           class="mb-3"
         />
       </div>
     </template>
+    <div v-if="vaStore.activeVABank">
+      <p>Active Virtual Account Bank: {{ vaStore.activeVABank }}</p>
+    </div>
+    <div v-if="vaStore.activeVABankResponse">
+      <p>Active Virtual Account Bank Response:</p>
+      <pre>{{ vaStore.activeVABankResponse }}</pre>
+    </div>
   </div>
 </template>
 
@@ -27,7 +33,7 @@ onMounted(() => {
   vaStore.getAllVirtualAccount();
 });
 
-function createVirtualAccount(id) {
+const createVirtualAccount = (id) => {
   vaStore.createVirtualAccount(id);
-}
+};
 </script>

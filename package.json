@@ -27,6 +27,7 @@
     "pinia": "^2.1.7",
     "pinia-persistedstate": "^0.1.2",
     "socket.io-client": "^4.7.2",
-    "sweetalert2": "^11.10.1"
+    "sweetalert2": "^11.10.1",
+    "vuex-persistedstate": "^4.1.0"
   }
 }
