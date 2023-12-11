@@ -46,8 +46,8 @@ export const useVaStore = defineStore("virtualaccount", {
         const bankData = this.banks.find((bank) => bank.code === id);
 
         if (!this.canCreateNewVA(id)) {
-          console.error(
-            `Cannot create a new VA for ${id}. There is an active VA for ${this.activeVABank}.`
+          alert(
+            `Tidak bisa bikin VA untuk ${id}. Karena masih aktif VA ${this.activeVABank}.`
           );
           return;
         }
@@ -63,12 +63,8 @@ export const useVaStore = defineStore("virtualaccount", {
 
         if (response.data.status === "PENDING") {
           this.activeVABank = id;
-          console.log("Successfully created VA.");
-          window.location = `virtualaccount/${this.activeVABank}`;
+          alert("Successfully created VA.");
         } else {
-          const errorMessage = response.data.error
-            ? response.data.error.message
-            : "An error occurred.";
           console.error("Error creating VA:", errorMessage);
         }
       } catch (e) {
