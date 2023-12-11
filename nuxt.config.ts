@@ -11,9 +11,14 @@ export default defineNuxtConfig({
         // @ts-expect-error
         config.plugins.push(vuetify({ autoImport: true }))
       })
-    }
+    },
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt',
     //...
   ],
+  pinia: {
+    storesDirs: ['./stores/**', './stores/**'],
+  },
   vite: {
     vue: {
       template: {

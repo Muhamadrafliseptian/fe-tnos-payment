@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <v-container style="max-width: 600px">
     <v-timeline density="compact" side="end">
       <v-timeline-item
@@ -47,4 +47,28 @@ export default {
     }
   },
 };
+</script> -->
+
+
+<template>
+  <div>
+    <div class="text-caption">
+      <h6>Data:</h6>
+      <p class="mb-0">Active VA Bank: {{ vaStore.activeVABank }}</p>
+      <p>Active VA Bank Response: {{ vaStore.activeVABankResponse }}</p>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import { useVaStore } from "@/stores/statePayment/useVirtualAccount";
+
+const vaStore = useVaStore();
+const { $swal } = useNuxtApp();
+
+onMounted(() => {
+  vaStore.initialize();
+  vaStore.getAllVirtualAccount();
+});
 </script>
