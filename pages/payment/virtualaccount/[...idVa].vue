@@ -30,10 +30,10 @@ export default {
       ],
     };
   },
-  mounted(){
-    setInterval(() => {
-      this.getStatusLog()
-    }, 5000);
+  computed: {
+    getInvoiceId(){
+      localStorage.getItem("invoice_id")
+    }
   },
   methods: {
     async getStatusLog(){

@@ -38,7 +38,7 @@
           </p>
           <p class="mb-0">NMID: 12738828192039</p>
         </v-card-text>
-        <v-img :src="qrCode" class="mt-5 rounded-xl" :elevation="10"></v-img>
+        <v-img :src="qrCode" color="white" class="mt-5 rounded-xl" :elevation="10"></v-img>
       </v-container>
     </v-card>
     <div class="text-center mt-5">
@@ -169,13 +169,13 @@ export default {
           expiration_date_local: expirationDateLocal,
         };
 
-        if(response.data.status !== 'PAID'){
-          setTimeout(this.getStatusLog, 500000);
-        }
+        // if(response.data.status !== 'PAID'){
+        //   setTimeout(this.getStatusLog, 500000);
+        // }
 
       } catch (error) {
         console.error("Error:", error);
-        setTimeout(this.getStatusLog, 5000);
+        // setTimeout(this.getStatusLog, 5000);
       }
     },
   },
