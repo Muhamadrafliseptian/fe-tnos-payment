@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import createPersistedState from "pinia-persistedstate";
 
 export const useVaStore = defineStore("virtualaccount", {
   state() {
@@ -19,14 +18,8 @@ export const useVaStore = defineStore("virtualaccount", {
     },
   },
   actions: {
-    plugins:
-      typeof window !== "undefined"
-        ? [createPersistedState({ key: "vaStore", paths: ["activeVABank"] })]
-        : [],
-
     initialize() {
       this.getAllVirtualAccount();
-      const persistedState = this.$state;
     },
 
     async getAllVirtualAccount() {
