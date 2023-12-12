@@ -12,6 +12,9 @@
           Status: <b>{{ transactionData?.status }}</b>
         </p>
         <p class="mb-0">
+          Sisa waktu pembayaran: <b>{{ countdown }}</b>
+        </p>
+        <p class="mb-0">
           Tenggat Waktu Pembayaran: <b>{{ expireDate }} WIB</b>
         </p>
         <p class="mb-0">
@@ -58,16 +61,35 @@ const datas = [
   "Pembayaran Berhasil",
 ];
 
+const expireDates = ref("12/12/2023, 17:46:09");
+const countdown = ref("");
+
+const updateCountdown = () => {
+  const now = new Date();
+  const expireDateTime = new Date(expireDates.value);
+  const timeDifference = expireDateTime - now;
+
+  if (timeDifference > 0) {
+    const seconds = Math.floor(timeDifference / 1000) % 60;
+    const minutes = Math.floor(timeDifference / (1000 * 60)) % 60;
+    const hours = Math.floor(timeDifference / (1000 * 60 * 60));
+
+    countdown.value = `${hours} jam ${minutes} menit ${seconds} detik`;
+  } else {
+    countdown.value = "Waktu habis";
+  }
+};
+
 onMounted(() => {
   vaStore.initialize();
   vaStore.getAllVirtualAccount();
   getData();
   getItemLocal();
+  // setInterval(updateCountdown, 1000);
 });
 
 const getItemLocal = (id) => {
   const dataVirtualAccount = localStorage.getItem("virtualAccountData");
-  console.log(dataVirtualAccount);
 };
 
 const getData = () => {
