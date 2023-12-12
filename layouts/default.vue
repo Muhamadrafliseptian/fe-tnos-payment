@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <slot> </slot>
-    <!-- <PartialsFooter /> -->
+    <PartialsFooter />
   </v-container>
 </template>
 <script setup>

@@ -38,19 +38,51 @@ export const useVaStore = defineStore("virtualaccount", {
 
     async createVirtualAccount(id) {
       try {
+        const virtualAccountData =
+          JSON.parse(localStorage.getItem("virtualAccountData")) || {};
+
+        // Periksa apakah virtual account dengan bank_code yang sama sudah ada
+        if (virtualAccountData[id]) {
+          const expirationDate = new Date(virtualAccountData[id].expired_date);
+          const currentDate = new Date();
+          window.location = `virtualaccount/${id}`
+
+          // Periksa apakah expired_date masih berlaku
+          if (expirationDate > currentDate) {
+            console.log(
+              "Cannot create a new virtual account. Existing virtual account is still active."
+            );
+            return;
+          }
+        }
+
         const response = await axios.post(
           "http://127.0.0.1:3001/payment/virtualaccount",
           {
             bank_code: id,
           }
         );
+
         if (response.data.status === "PENDING") {
-          alert("Successfully created VA.");
+          virtualAccountData[response.data.bank_code] = {
+            account_number: response.data.account_number,
+            invoice_id: response.data.invoice_id,
+            status: response.data.status,
+            external_id: response.data.external_id,
+            expired_date: response.data.expiration_date,
+          };
+
+          localStorage.setItem(
+            "virtualAccountData",
+            JSON.stringify(virtualAccountData)
+          );
+          window.location = `virtualaccount/${id}`
+
         } else {
-          console.error("Error creating VA:", errorMessage);
+          console.error("Error creating VA:", response.data.errorMessage);
         }
-      } catch (e) {
-        console.error("An error occurred:", e);
+      } catch (error) {
+        console.error("An error occurred:", error.message || error);
       }
     },
   },

@@ -1,6 +1,6 @@
 <template>
   <v-layout class="overflow-visible" style="height: 56px">
-    <v-bottom-navigation v-model="value" active color="primary">
+    <v-bottom-navigation active color="primary">
       <v-btn @click="backHome">
         <v-icon>mdi-home</v-icon>
         Home
