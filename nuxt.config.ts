@@ -13,7 +13,6 @@ export default defineNuxtConfig({
       })
     },
     '@pinia/nuxt',
-    // '@pinia-plugin-persistedstate/nuxt',
     //...
   ],
   pinia: {
@@ -26,9 +25,5 @@ export default defineNuxtConfig({
       },
     },
   },
-  plugins: [
-    // other plugins
-    "@/plugins/vuex-persistedstated.js",
-  ],
 })
 
