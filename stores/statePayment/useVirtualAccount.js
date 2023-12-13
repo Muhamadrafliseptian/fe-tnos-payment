@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import CryptoJS from "crypto-js";
 
 export const useVaStore = defineStore("virtualaccount", {
   state() {
@@ -37,47 +38,67 @@ export const useVaStore = defineStore("virtualaccount", {
     },
 
     async createVirtualAccount(id) {
-      try {
-        const virtualAccountData =
-          JSON.parse(localStorage.getItem("virtualAccountData")) || {};
+      const virtualAccountData =
+        JSON.parse(localStorage.getItem("virtualAccountData")) || {};
 
-        // Periksa apakah virtual account dengan bank_code yang sama sudah ada
+      const checkExistingVirtualAccount = async () => {
         if (virtualAccountData[id]) {
-          const expirationDate = new Date(virtualAccountData[id].expired_date);
+          const expirationDate = new Date(
+            CryptoJS.AES.decrypt(
+              virtualAccountData[id].expired_date,
+              "your-secret-key"
+            ).toString(CryptoJS.enc.Utf8)
+          );
           const currentDate = new Date();
-          window.location = `virtualaccount/${id}`
-
-          // Periksa apakah expired_date masih berlaku
           if (expirationDate > currentDate) {
             console.log(
               "Cannot create a new virtual account. Existing virtual account is still active."
             );
-            return;
+            return true;
           }
+        }
+        return false;
+      };
+
+      const handleEncryption = (data) => {
+        const encryptedData = {};
+        for (const key in data) {
+          encryptedData[key] = CryptoJS.AES.encrypt(
+            data[key],
+            "your-secret-key"
+          ).toString();
+        }
+        return encryptedData;
+      };
+
+      try {
+        if (await checkExistingVirtualAccount()) {
+          return;
         }
 
         const response = await axios.post(
           "http://127.0.0.1:3001/payment/virtualaccount",
-          {
-            bank_code: id,
-          }
+          { bank_code: id }
         );
 
         if (response.data.status === "PENDING") {
-          virtualAccountData[response.data.bank_code] = {
+          const encryptedData = handleEncryption({
             account_number: response.data.account_number,
             invoice_id: response.data.invoice_id,
             status: response.data.status,
             external_id: response.data.external_id,
             expired_date: response.data.expiration_date,
-          };
+          });
+
+          virtualAccountData[response.data.bank_code] = encryptedData;
 
           localStorage.setItem(
             "virtualAccountData",
             JSON.stringify(virtualAccountData)
           );
-          window.location = `virtualaccount/${id}`
 
+          // Redirect to the virtual account page
+          window.location = `virtualaccount/${id}`;
         } else {
           console.error("Error creating VA:", response.data.errorMessage);
         }

@@ -1,17 +1,31 @@
 <template>
-  <h6>{{ route.params.idVa[0] }}</h6>
-  <div v-if="messageExpired" class="text-center">
+  <b>
+    <v-icon
+      icon="mdi mdi-keyboard-backspace"
+      class="mb-3"
+      @click="router.back(-1)"
+      color="black"
+    ></v-icon>
+  </b>
+  <div v-if="messageExpired" class="mt-3 text-center">
     <p class="mb-0">{{ messageExpired }}</p>
     <p class="mb-0">Silahkan pilih metode pembayaran lagi</p>
-    <v-btn class="text-caption" text="kembali" color="blue"></v-btn>
+    <v-btn
+      class="text-caption"
+      text="kembali"
+      width="100"
+      color="blue"
+      @click="router.back(-1)"
+    ></v-btn>
   </div>
   <div v-else>
     <v-card color="grey-lighten-5" class="text-caption">
       <v-card-text>
+        <h6 color="indigo">{{ route.params.idVa[0] }}</h6>
         <p class="mb-0">
           Status: <b>{{ transactionData?.status }}</b>
         </p>
-        <p class="mb-0">
+        <p class="mb-0" hidden>
           Sisa waktu pembayaran: <b>{{ countdown }}</b>
         </p>
         <p class="mb-0">
@@ -47,56 +61,35 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useVaStore } from "@/stores/statePayment/useVirtualAccount";
-
+const { $swal } = useNuxtApp();
 const vaStore = useVaStore();
 const transactionData = ref();
-const expireDate = ref();
 const messageExpired = ref();
+const expireDate = ref("");
 const route = useRoute();
+const router = useRouter();
+const countdown = ref("");
 const datas = [
-  "Masukkan VIrtual Account yang Anda ingin bayarkan",
+  "Masukkan Virtual Account yang Anda ingin bayarkan",
   "Masukan nominal, kemudian pilih Lanjutkan",
   "Konfirmasi Transaksi kemudian Lanjut Transfer",
   "Masukkan Pin Aplikasi",
   "Pembayaran Berhasil",
 ];
 
-const expireDates = ref("12/12/2023, 17:46:09");
-const countdown = ref("");
-
-const updateCountdown = () => {
-  const now = new Date();
-  const expireDateTime = new Date(expireDates.value);
-  const timeDifference = expireDateTime - now;
-
-  if (timeDifference > 0) {
-    const seconds = Math.floor(timeDifference / 1000) % 60;
-    const minutes = Math.floor(timeDifference / (1000 * 60)) % 60;
-    const hours = Math.floor(timeDifference / (1000 * 60 * 60));
-
-    countdown.value = `${hours} jam ${minutes} menit ${seconds} detik`;
-  } else {
-    countdown.value = "Waktu habis";
-  }
-};
-
 onMounted(() => {
   vaStore.initialize();
   vaStore.getAllVirtualAccount();
   getData();
-  getItemLocal();
-  // setInterval(updateCountdown, 1000);
+  // updateCountdown();
 });
-
-const getItemLocal = (id) => {
-  const dataVirtualAccount = localStorage.getItem("virtualAccountData");
-};
 
 const getData = () => {
   try {
+    const externalId = getExternalIdFromLocalStorage(route.params.idVa[0]);
     axios
       .get(
-        `http://localhost:3001/payment/INV-TNOS123/${route.params.idVa[0]}/tnos-lscwhs/get`
+        `http://localhost:3001/payment/INV-TNOS123/${route.params.idVa[0]}/${externalId}/get`
       )
       .then((response) => {
         const expirationDateUTC = new Date(response.data.expiration_date);
@@ -108,14 +101,38 @@ const getData = () => {
         );
         transactionData.value = response.data;
         expireDate.value = expirationDateLocal;
-        const timeOut = 7 * 60 * 1000;
         if (response.data.status !== "PAID") {
-          setTimeout(getData, timeOut);
+          setTimeout(getData, 5000);
           messageExpired.value = response.data.message;
+        } else {
+          clearVirtualAccountData();
+          $swal
+            .fire({
+              title: "Success!",
+              text: "Berhasil melakukan pembayaran",
+              icon: "success",
+              showConfirmButton: true,
+            })
+            .then(() => {
+              router.back(-1);
+            });
         }
       });
   } catch (er) {
     console.log(er);
   }
+};
+
+const clearVirtualAccountData = () => {
+  localStorage.removeItem("virtualAccountData");
+};
+
+const getExternalIdFromLocalStorage = (bankCode) => {
+  const dataVirtualAccount =
+    JSON.parse(localStorage.getItem("virtualAccountData")) || {};
+  const externalId = dataVirtualAccount[bankCode]
+    ? dataVirtualAccount[bankCode].external_id
+    : null;
+  return externalId;
 };
 </script>
