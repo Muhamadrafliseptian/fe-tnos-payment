@@ -46,16 +46,12 @@ export const useVaStore = defineStore("virtualaccount", {
           const expirationDate = new Date(
             CryptoJS.AES.decrypt(
               virtualAccountData[id].expired_date,
-              "your-secret-key"
+              "U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0="
             ).toString(CryptoJS.enc.Utf8)
           );
           const currentDate = new Date();
           if (expirationDate > currentDate) {
-            console.log(
-              "Cannot create a new virtual account. Existing virtual account is still active."
-            );
-            window.location = `virtualaccount/${id}`;
-            return false;
+            return true;
           }
         }
         return false;
@@ -66,7 +62,7 @@ export const useVaStore = defineStore("virtualaccount", {
         for (const key in data) {
           encryptedData[key] = CryptoJS.AES.encrypt(
             data[key],
-            "your-secret-key"
+            "U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0="
           ).toString();
         }
         return encryptedData;
@@ -74,7 +70,7 @@ export const useVaStore = defineStore("virtualaccount", {
 
       try {
         if (await checkExistingVirtualAccount()) {
-          return;
+          return false;
         }
 
         const response = await axios.post(
@@ -97,9 +93,11 @@ export const useVaStore = defineStore("virtualaccount", {
             "virtualAccountData",
             JSON.stringify(virtualAccountData)
           );
-          window.location = `virtualaccount/${id}`;
+          // window.location = `virtualaccount/${id}`;
+          return true;
         } else {
           console.error("Error creating VA:", response.data.errorMessage);
+          return false;
         }
       } catch (error) {
         console.error("An error occurred:", error.message || error);

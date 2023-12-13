@@ -126,6 +126,7 @@ const getData = () => {
 
 const clearVirtualAccountData = () => {
   localStorage.removeItem("virtualAccountData");
+  localStorage.removeItem("qrCodeData");
 };
 
 const getExternalIdFromLocalStorage = (bankCode) => {
@@ -137,7 +138,7 @@ const getExternalIdFromLocalStorage = (bankCode) => {
     try {
       const decryptedExternalId = CryptoJS.AES.decrypt(
         encryptedExternalId,
-        "your-secret-key"
+        "U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0="
       ).toString(CryptoJS.enc.Utf8);
       return decryptedExternalId;
     } catch (error) {

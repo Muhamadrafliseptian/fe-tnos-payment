@@ -27,13 +27,19 @@ import { useVaStore } from "@/stores/statePayment/useVirtualAccount";
 
 const vaStore = useVaStore();
 const { $swal } = useNuxtApp();
+const router = useRouter()
 
 onMounted(() => {
   vaStore.initialize();
   vaStore.getAllVirtualAccount();
 });
 
-const createVirtualAccount = (id) => {
-  vaStore.createVirtualAccount(id);
+const createVirtualAccount = async (id) => {
+  const result = await vaStore.createVirtualAccount(id);
+  if (result) {
+    router.push(`virtualaccount/${id}`);
+  } else {
+    router.push(`virtualaccount/${id}`);
+  }
 };
 </script>

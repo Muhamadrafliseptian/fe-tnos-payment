@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import CryptoJS from "crypto-js";
+import { useRouter } from "vue-router";
 
 export const useQrStore = defineStore("qrcode", {
   state() {
@@ -45,16 +46,12 @@ export const useQrStore = defineStore("qrcode", {
           const expirationDate = new Date(
             CryptoJS.AES.decrypt(
               qrCodeData[id].expired_date,
-              "your-secret-key"
+              "U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0="
             ).toString(CryptoJS.enc.Utf8)
           );
           const currentDate = new Date();
           if (expirationDate > currentDate) {
-            console.log(
-              "Cannot create a new qr code. Existing qr code is still active."
-            );
-            window.location = `/qrcode/${id}`;
-            return false;
+            return true;
           }
         }
         return false;
@@ -65,7 +62,7 @@ export const useQrStore = defineStore("qrcode", {
         for (const key in data) {
           encryptedData[key] = CryptoJS.AES.encrypt(
             data[key],
-            "your-secret-key"
+            "U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0="
           ).toString();
         }
         return encryptedData;
@@ -73,7 +70,7 @@ export const useQrStore = defineStore("qrcode", {
 
       try {
         if (await checkExistingQr()) {
-          return;
+          return false;
         }
 
         const response = await axios.post(
@@ -92,9 +89,10 @@ export const useQrStore = defineStore("qrcode", {
           qrCodeData[response.data.channel_code] = encryptedData;
 
           localStorage.setItem("qrCodeData", JSON.stringify(qrCodeData));
-          window.location = `/qrcode/${id}`;
+          return true;
         } else {
           console.error("Error creating Qr:", response.data.errorMessage);
+          return false;
         }
       } catch (error) {
         console.error("An error occurred:", error.message || error);
