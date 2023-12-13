@@ -134,7 +134,7 @@ const getData = () => {
         transactionData.value = response.data;
         expireDate.value = expirationDateLocal;
         if (response.data.status !== "SUCCEEDED") {
-          // setTimeout(getData, 5000);
+          setTimeout(getData, 5000);
           messageExpired.value = response.data.message;
         } else {
           clearVirtualAccountData();
