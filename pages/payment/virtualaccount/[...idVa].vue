@@ -58,6 +58,7 @@
 </template>
 
 <script setup>
+import CryptoJS from 'crypto-js'
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useVaStore } from "@/stores/statePayment/useVirtualAccount";
@@ -130,9 +131,21 @@ const clearVirtualAccountData = () => {
 const getExternalIdFromLocalStorage = (bankCode) => {
   const dataVirtualAccount =
     JSON.parse(localStorage.getItem("virtualAccountData")) || {};
-  const externalId = dataVirtualAccount[bankCode]
-    ? dataVirtualAccount[bankCode].external_id
-    : null;
-  return externalId;
+  const encryptedExternalId = dataVirtualAccount[bankCode]?.external_id;
+
+  if (encryptedExternalId) {
+    try {
+      const decryptedExternalId = CryptoJS.AES.decrypt(
+        encryptedExternalId,
+        "your-secret-key"
+      ).toString(CryptoJS.enc.Utf8);
+      return decryptedExternalId;
+    } catch (error) {
+      console.error("Error decrypting external_id:", error.message || error);
+      return null;
+    }
+  }
+
+  return null;
 };
 </script>

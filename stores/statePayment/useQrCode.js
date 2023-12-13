@@ -2,34 +2,34 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 
-export const useVaStore = defineStore("virtualaccount", {
+export const useQrStore = defineStore("qrcode", {
   state() {
     return {
-      banks: [],
+      qrcodes: [],
       isLoading: false,
       error: null,
       swal: null,
-      activeVABank: null,
-      activeVABankResponse: null,
+      activeQr: null,
+      activeQrResponse: null,
     };
   },
   getters: {
-    canCreateNewVA: (state) => (bankCode) => {
-      return !state.activeVABank || state.activeVABank === bankCode;
+    canCreateNewQr: (state) => (channelCode) => {
+      return !state.activeQr || state.activeQr === channelCode;
     },
   },
   actions: {
     initialize() {
-      if (!this.activeVABank || !this.activeVABankResponse) {
-        this.getAllVirtualAccount();
+      if (!this.activeQr || !this.activeQrResponse) {
+        this.getQr();
       }
     },
 
-    async getAllVirtualAccount() {
+    async getQr() {
       try {
         this.isLoading = true;
-        const response = await axios.get("http://127.0.0.1:3001/payment/bank");
-        this.banks = response.data;
+        const response = await axios.get("http://127.0.0.1:3001/qr_code");
+        this.qrcodes = response.data.data;
       } catch (error) {
         console.error("Error fetching bank data:", error);
       } finally {
@@ -37,24 +37,23 @@ export const useVaStore = defineStore("virtualaccount", {
       }
     },
 
-    async createVirtualAccount(id) {
-      const virtualAccountData =
-        JSON.parse(localStorage.getItem("virtualAccountData")) || {};
+    async createQrCode(id) {
+      const qrCodeData = JSON.parse(localStorage.getItem("qrCodeData")) || {};
 
-      const checkExistingVirtualAccount = async () => {
-        if (virtualAccountData[id]) {
+      const checkExistingQr = async () => {
+        if (qrCodeData[id]) {
           const expirationDate = new Date(
             CryptoJS.AES.decrypt(
-              virtualAccountData[id].expired_date,
+              qrCodeData[id].expired_date,
               "your-secret-key"
             ).toString(CryptoJS.enc.Utf8)
           );
           const currentDate = new Date();
           if (expirationDate > currentDate) {
             console.log(
-              "Cannot create a new virtual account. Existing virtual account is still active."
+              "Cannot create a new qr code. Existing qr code is still active."
             );
-            window.location = `virtualaccount/${id}`;
+            window.location = `/qrcode/${id}`;
             return false;
           }
         }
@@ -73,33 +72,29 @@ export const useVaStore = defineStore("virtualaccount", {
       };
 
       try {
-        if (await checkExistingVirtualAccount()) {
+        if (await checkExistingQr()) {
           return;
         }
 
         const response = await axios.post(
-          "http://127.0.0.1:3001/payment/virtualaccount",
-          { bank_code: id }
+          "http://127.0.0.1:3001/payment/qrcode",
+          { channel_code: id }
         );
 
-        if (response.data.status === "PENDING") {
+        if (response.data.status === "ACTIVE") {
           const encryptedData = handleEncryption({
-            account_number: response.data.account_number,
             invoice_id: response.data.invoice_id,
             status: response.data.status,
             external_id: response.data.external_id,
-            expired_date: response.data.expiration_date,
+            expired_date: response.data.expires_at,
           });
 
-          virtualAccountData[response.data.bank_code] = encryptedData;
+          qrCodeData[response.data.channel_code] = encryptedData;
 
-          localStorage.setItem(
-            "virtualAccountData",
-            JSON.stringify(virtualAccountData)
-          );
-          window.location = `virtualaccount/${id}`;
+          localStorage.setItem("qrCodeData", JSON.stringify(qrCodeData));
+          window.location = `/qrcode/${id}`;
         } else {
-          console.error("Error creating VA:", response.data.errorMessage);
+          console.error("Error creating Qr:", response.data.errorMessage);
         }
       } catch (error) {
         console.error("An error occurred:", error.message || error);
