@@ -1,16 +1,28 @@
 <template>
-  <v-container>
+  <h5>
+    Halaman Pembayaran
+  </h5>
+  <!-- <div class="full-page-embed">
     <iframe
-      v-if="urlDirect"
-      :src="urlDirect"
       width="100%"
-      height="600px"
-    ></iframe>
-    <div v-else>
-      <p>No decrypted URL available.</p>
-    </div>
-  </v-container>
+      height="100%"
+      src="https://ewallet-mock-connector.xendit.co/v1/ewallet_connector/checkouts?token=cltbrbcq7tblsgdhjqvg"
+    />
+  </div> -->
 </template>
+
+<style scoped>
+.full-page-embed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+</style>
 
 <script>
 import CryptoJS from "crypto-js";
@@ -19,7 +31,7 @@ export default {
   data() {
     return {
       urlDirect: null,
-      secretKey: "secret-key",
+      secretKey: "ajajdakdja3ijdaidahbc",
     };
   },
   created() {

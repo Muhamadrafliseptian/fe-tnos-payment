@@ -103,7 +103,7 @@ const getData = () => {
         transactionData.value = response.data;
         expireDate.value = expirationDateLocal;
         if (response.data.status !== "PAID") {
-          setTimeout(getData, 5000);
+          // setTimeout(getData, 5000);
           messageExpired.value = response.data.message;
         } else {
           clearVirtualAccountData();
@@ -127,6 +127,7 @@ const getData = () => {
 const clearVirtualAccountData = () => {
   localStorage.removeItem("virtualAccountData");
   localStorage.removeItem("qrCodeData");
+  localStorage.removeItem("ewalletData");
 };
 
 const getExternalIdFromLocalStorage = (bankCode) => {

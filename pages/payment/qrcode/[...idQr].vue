@@ -134,7 +134,7 @@ const getData = () => {
         transactionData.value = response.data;
         expireDate.value = expirationDateLocal;
         if (response.data.status !== "SUCCEEDED") {
-          setTimeout(getData, 5000);
+          // setTimeout(getData, 5000);
           messageExpired.value = response.data.message;
         } else {
           clearVirtualAccountData();
@@ -158,6 +158,7 @@ const getData = () => {
 const clearVirtualAccountData = () => {
   localStorage.removeItem("qrCodeData");
   localStorage.removeItem("virtualAccountData");
+  localStorage.removeItem("ewalletData");
 };
 
 const getExternalIdFromLocalStorage = (channelCode) => {
