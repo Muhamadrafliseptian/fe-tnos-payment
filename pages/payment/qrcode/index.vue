@@ -24,7 +24,7 @@ const router = useRouter();
 
 onMounted(() => {
   qaStore.initialize();
-  qaStore.getQr();
+  // qaStore.getQr();
 });
 
 const handleQrCodeCreation = async (id) => {

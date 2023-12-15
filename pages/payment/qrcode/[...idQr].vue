@@ -108,6 +108,8 @@ const sheet = ref(false);
 const imageQris = LogoQris;
 const imageGpn = LogoGpn;
 const imageQrCode = QrCode;
+let timerId;
+let paymentProcessed = false;
 
 onMounted(() => {
   qaStore.initialize();
@@ -116,14 +118,24 @@ onMounted(() => {
   // updateCountdown();
 });
 
+onUnmounted(() => {
+  clearTimeout(timerId);
+});
+
 const getData = () => {
   try {
+    if (paymentProcessed) {
+      return;
+    }
     const externalId = getExternalIdFromLocalStorage(route.params.idQr[0]);
     axios
       .get(
         `http://localhost:3001/payment/INV-TNOS123/${route.params.idQr[0]}/${externalId}/get`
       )
       .then((response) => {
+        if (paymentProcessed) {
+          return;
+        }
         const expirationDateUTC = new Date(response.data.expiration_date);
 
         const options = { timeZone: "Asia/Jakarta" };
@@ -134,9 +146,11 @@ const getData = () => {
         transactionData.value = response.data;
         expireDate.value = expirationDateLocal;
         if (response.data.status !== "SUCCEEDED") {
-          // setTimeout(getData, 5000);
+          timerId = setTimeout(getData, 5000);
           messageExpired.value = response.data.message;
         } else {
+          clearTimeout(timerId);
+          paymentProcessed = true;
           clearVirtualAccountData();
           $swal
             .fire({

@@ -31,7 +31,7 @@ const router = useRouter()
 
 onMounted(() => {
   vaStore.initialize();
-  vaStore.getAllVirtualAccount();
+  // vaStore.getAllVirtualAccount();
 });
 
 const createVirtualAccount = async (id) => {

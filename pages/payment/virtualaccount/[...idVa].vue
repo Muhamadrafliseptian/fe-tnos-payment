@@ -8,7 +8,7 @@
     ></v-icon>
   </b>
   <div v-if="messageExpired" class="mt-3 text-center">
-    <p class="mb-0">{{ messageExpired }}</p>
+    <!-- <p class="mb-0">{{ messageExpired }}</p>
     <p class="mb-0">Silahkan pilih metode pembayaran lagi</p>
     <v-btn
       class="text-caption"
@@ -16,7 +16,7 @@
       width="100"
       color="blue"
       @click="router.back(-1)"
-    ></v-btn>
+    ></v-btn> -->
   </div>
   <div v-else>
     <v-card color="grey-lighten-5" class="text-caption">
@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import CryptoJS from 'crypto-js'
+import CryptoJS from "crypto-js";
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useVaStore } from "@/stores/statePayment/useVirtualAccount";
@@ -78,47 +78,60 @@ const datas = [
   "Pembayaran Berhasil",
 ];
 
+let timerId;
+let paymentProcessed = false; 
+
 onMounted(() => {
   vaStore.initialize();
-  vaStore.getAllVirtualAccount();
   getData();
-  // updateCountdown();
 });
 
-const getData = () => {
-  try {
-    const externalId = getExternalIdFromLocalStorage(route.params.idVa[0]);
-    axios
-      .get(
-        `http://localhost:3001/payment/INV-TNOS123/${route.params.idVa[0]}/${externalId}/get`
-      )
-      .then((response) => {
-        const expirationDateUTC = new Date(response.data.expiration_date);
+onUnmounted(() => {
+  clearTimeout(timerId);
+});
 
-        const options = { timeZone: "Asia/Jakarta" };
-        const expirationDateLocal = expirationDateUTC.toLocaleString(
-          "id-ID",
-          options
-        );
-        transactionData.value = response.data;
-        expireDate.value = expirationDateLocal;
-        if (response.data.status !== "PAID") {
-          // setTimeout(getData, 5000);
-          messageExpired.value = response.data.message;
-        } else {
-          clearVirtualAccountData();
-          $swal
-            .fire({
-              title: "Success!",
-              text: "Berhasil melakukan pembayaran",
-              icon: "success",
-              showConfirmButton: true,
-            })
-            .then(() => {
-              router.back(-1);
-            });
-        }
-      });
+const getData = async () => {
+  try {
+    if (paymentProcessed) {
+      return;
+    }
+
+    const externalId = getExternalIdFromLocalStorage(route.params.idVa[0]);
+    const response = await axios.get(
+      `http://localhost:3001/payment/INV-TNOS123/${route.params.idVa[0]}/${externalId}/get`
+    );
+
+    if (paymentProcessed) {
+      return;
+    }
+
+    const expirationDateUTC = new Date(response.data.expiration_date);
+    const options = { timeZone: "Asia/Jakarta" };
+    const expirationDateLocal = expirationDateUTC.toLocaleString(
+      "id-ID",
+      options
+    );
+    transactionData.value = response.data;
+    expireDate.value = expirationDateLocal;
+
+    if (response.data.status !== "PAID") {
+      timerId = setTimeout(getData, 5000);
+      messageExpired.value = response.data.message;
+    } else {
+      paymentProcessed = true;
+      clearTimeout(timerId);
+      clearVirtualAccountData();
+      $swal
+        .fire({
+          title: "Success!",
+          text: "Berhasil melakukan pembayaran",
+          icon: "success",
+          showConfirmButton: true,
+        })
+        .then(() => {
+          router.back(-1);
+        });
+    }
   } catch (er) {
     console.log(er);
   }
@@ -151,3 +164,4 @@ const getExternalIdFromLocalStorage = (bankCode) => {
   return null;
 };
 </script>
+

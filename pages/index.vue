@@ -60,7 +60,6 @@ const getData = () => {
           paymentData.forEach((payment) => {
             if (payment.status === "PAID") {
               paidFound = true;
-              console.log(payment);
             }
           });
 
@@ -69,7 +68,7 @@ const getData = () => {
           );
           console.log(pendingPayments);
           if (pendingPayments.length > 0 && paidFound) {
-            setTimeout(getData, 5000);
+            setTimeout(getData, 600000);
           }
         }
       });
