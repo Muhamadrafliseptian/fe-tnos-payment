@@ -11,6 +11,7 @@ export const useVaStore = defineStore("virtualaccount", {
       swal: null,
       activeVABank: null,
       activeVABankResponse: null,
+      paymentSuccess: false,
     };
   },
   getters: {
@@ -19,6 +20,9 @@ export const useVaStore = defineStore("virtualaccount", {
     },
   },
   actions: {
+    setPaymentSuccess(success) {
+      this.paymentSuccess = success;
+    },
     initialize() {
       if (!this.activeVABank || !this.activeVABankResponse) {
         this.getAllVirtualAccount();
@@ -93,10 +97,9 @@ export const useVaStore = defineStore("virtualaccount", {
             "virtualAccountData",
             JSON.stringify(virtualAccountData)
           );
-          // window.location = `virtualaccount/${id}`;
           return true;
         } else {
-          console.error("Error creating VA:", response.data.errorMessage);
+          console.log(response.data.error.message);
           return false;
         }
       } catch (error) {

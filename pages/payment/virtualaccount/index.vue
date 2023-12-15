@@ -11,13 +11,6 @@
         />
       </div>
     </template>
-    <div v-if="vaStore.activeVABank">
-      <p>Active Virtual Account Bank: {{ vaStore.activeVABank }}</p>
-    </div>
-    <div v-if="vaStore.activeVABankResponse">
-      <p>Active Virtual Account Bank Response:</p>
-      <pre>{{ vaStore.activeVABankResponse }}</pre>
-    </div>
   </div>
 </template>
 
@@ -26,12 +19,10 @@ import { ref, onMounted } from "vue";
 import { useVaStore } from "@/stores/statePayment/useVirtualAccount";
 
 const vaStore = useVaStore();
-const { $swal } = useNuxtApp();
 const router = useRouter()
 
 onMounted(() => {
   vaStore.initialize();
-  // vaStore.getAllVirtualAccount();
 });
 
 const createVirtualAccount = async (id) => {

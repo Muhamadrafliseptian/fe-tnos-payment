@@ -21,8 +21,6 @@
   </div>
 </template>
 <script setup>
-import { onMounted } from "vue";
-import axios from "axios";
 const router = useRouter();
 
 const data = [
@@ -48,34 +46,4 @@ const data = [
 const postClick = (id) => {
   router.push(`/payment/${id}`);
 };
-let paidFound = false;
-
-const getData = () => {
-  try {
-    axios
-      .get("http://127.0.0.1:3001/payment/INV-TNOS123/get")
-      .then((response) => {
-        const paymentData = response.data && response.data.data;
-        if (paymentData) {
-          paymentData.forEach((payment) => {
-            if (payment.status === "PAID") {
-              paidFound = true;
-            }
-          });
-
-          const pendingPayments = paymentData.filter(
-            (payment) => payment.status !== "PAID"
-          );
-          console.log(pendingPayments);
-          if (pendingPayments.length > 0 && paidFound) {
-            setTimeout(getData, 600000);
-          }
-        }
-      });
-  } catch (er) {
-    console.error(er);
-  }
-};
-
-getData();
 </script>

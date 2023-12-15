@@ -78,6 +78,8 @@ const datas = [
   "Pembayaran Berhasil",
 ];
 
+vaStore.setPaymentSuccess(true)
+
 let timerId;
 let paymentProcessed = false; 
 
@@ -129,7 +131,7 @@ const getData = async () => {
           showConfirmButton: true,
         })
         .then(() => {
-          router.back(-1);
+          router.push('/redirect_payment')
         });
     }
   } catch (er) {
@@ -164,4 +166,3 @@ const getExternalIdFromLocalStorage = (bankCode) => {
   return null;
 };
 </script>
-
