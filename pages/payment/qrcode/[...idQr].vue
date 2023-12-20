@@ -112,7 +112,6 @@ let timerId;
 let paymentProcessed = false;
 
 onMounted(() => {
-  qaStore.initialize();
   qaStore.getQr();
   getData();
   // updateCountdown();

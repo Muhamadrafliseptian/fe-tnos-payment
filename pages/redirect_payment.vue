@@ -20,7 +20,6 @@ const paymentSuccess = vaStore.paymentSuccess;
 const countdown = ref(10);
 
 onMounted(() => {
-  // Update countdown every second
   const countdownInterval = setInterval(() => {
     countdown.value -= 1;
 
