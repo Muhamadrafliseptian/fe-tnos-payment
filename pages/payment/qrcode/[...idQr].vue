@@ -89,8 +89,10 @@ import CryptoJS from "crypto-js";
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useQrStore } from "~/stores/statePayment/useQrCode";
+import { useRedirect } from '~/stores/statePayment/useRedirect';
 const { $swal } = useNuxtApp();
 const qaStore = useQrStore();
+const redirectStore = useRedirect();
 const transactionData = ref();
 const messageExpired = ref();
 const expireDate = ref("");
@@ -116,6 +118,9 @@ onMounted(() => {
   getData();
   // updateCountdown();
 });
+
+redirectStore.setPaymentSuccess(true)
+
 
 onUnmounted(() => {
   clearTimeout(timerId);
@@ -151,16 +156,7 @@ const getData = () => {
           clearTimeout(timerId);
           paymentProcessed = true;
           clearVirtualAccountData();
-          $swal
-            .fire({
-              title: "Success!",
-              text: "Berhasil melakukan pembayaran",
-              icon: "success",
-              showConfirmButton: true,
-            })
-            .then(() => {
-              router.back(-1);
-            });
+          router.push("/redirect_payment");
         }
       });
   } catch (er) {

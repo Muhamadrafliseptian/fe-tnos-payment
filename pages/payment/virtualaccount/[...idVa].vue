@@ -62,8 +62,10 @@ import CryptoJS from "crypto-js";
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useVaStore } from "@/stores/statePayment/useVirtualAccount";
+import { useRedirect } from "~/stores/statePayment/useRedirect";
 const { $swal } = useNuxtApp();
 const vaStore = useVaStore();
+const redirectStore = useRedirect();
 const transactionData = ref();
 const messageExpired = ref();
 const expireDate = ref("");
@@ -78,10 +80,10 @@ const datas = [
   "Pembayaran Berhasil",
 ];
 
-vaStore.setPaymentSuccess(true)
+redirectStore.setPaymentSuccess(true)
 
 let timerId;
-let paymentProcessed = false; 
+let paymentProcessed = false;
 
 onMounted(() => {
   vaStore.initialize();
@@ -116,6 +118,9 @@ const getData = async () => {
     transactionData.value = response.data;
     expireDate.value = expirationDateLocal;
 
+    const date = new Date ()
+    console.log(date);
+
     if (response.data.status !== "PAID") {
       timerId = setTimeout(getData, 5000);
       messageExpired.value = response.data.message;
@@ -123,16 +128,7 @@ const getData = async () => {
       paymentProcessed = true;
       clearTimeout(timerId);
       clearVirtualAccountData();
-      $swal
-        .fire({
-          title: "Success!",
-          text: "Berhasil melakukan pembayaran",
-          icon: "success",
-          showConfirmButton: true,
-        })
-        .then(() => {
-          router.push('/redirect_payment')
-        });
+      router.push("/redirect_payment");
     }
   } catch (er) {
     console.log(er);
