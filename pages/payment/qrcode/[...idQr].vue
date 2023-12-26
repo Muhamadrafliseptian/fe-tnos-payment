@@ -119,7 +119,6 @@ let paymentProcessed = false;
 onMounted(() => {
   qaStore.getQr();
   getData();
-  // updateCountdown();
 });
 
 redirectStore.setPaymentSuccess(true);
