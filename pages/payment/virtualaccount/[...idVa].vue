@@ -31,6 +31,9 @@
         <p class="mb-0">
           Tenggat Waktu Pembayaran: <b>{{ expireDate }} WIB</b>
         </p>
+        <p v-if="countdown" class="mb-0">
+          Sisa waktu pembayaran: <b> {{ countdown }} </b>
+        </p>
         <p class="mb-0">
           Virtual Account: <b>{{ transactionData?.account_number }}</b>
         </p>
@@ -72,6 +75,8 @@ const expireDate = ref("");
 const route = useRoute();
 const router = useRouter();
 const countdown = ref("");
+const expirationDates = ref("");
+const waktu = ref("");
 const datas = [
   "Masukkan Virtual Account yang Anda ingin bayarkan",
   "Masukan nominal, kemudian pilih Lanjutkan",
@@ -80,7 +85,7 @@ const datas = [
   "Pembayaran Berhasil",
 ];
 
-redirectStore.setPaymentSuccess(true)
+redirectStore.setPaymentSuccess(true);
 
 let timerId;
 let paymentProcessed = false;
@@ -100,7 +105,7 @@ const getData = async () => {
       return;
     }
 
-    const externalId = getExternalIdFromLocalStorage(route.params.idVa[0]);
+    const externalId = getValueFromLocalStorage(route.params.idVa[0], 'external_id');
     const response = await axios.get(
       `http://localhost:3001/payment/INV-TNOS123/${route.params.idVa[0]}/${externalId}/get`
     );
@@ -108,6 +113,8 @@ const getData = async () => {
     if (paymentProcessed) {
       return;
     }
+
+    const expiredDate = getValueFromLocalStorage(route.params.idVa[0], 'expired_date');
 
     const expirationDateUTC = new Date(response.data.expiration_date);
     const options = { timeZone: "Asia/Jakarta" };
@@ -118,11 +125,26 @@ const getData = async () => {
     transactionData.value = response.data;
     expireDate.value = expirationDateLocal;
 
-    const date = new Date ()
-    console.log(date);
+    expirationDates.value = new Date(expiredDate);
+
+    const datess = new Date();
+
+    const sisaWaktu = expirationDates.value - datess;
+
+    const menit = Math.floor(sisaWaktu / (1000 * 60));
+    const detik = Math.floor((sisaWaktu % (1000 * 60)) / 1000);
+
+    waktu.value = `${menit} menit - ${detik} detik`;
+
+    countdown.value = waktu.value;
+
+    if (sisaWaktu < 0) {
+      removeKeyFromLocalStorage(route.params.idVa[0]);
+      router.push('/payment/virtualaccount')
+    }
 
     if (response.data.status !== "PAID") {
-      timerId = setTimeout(getData, 5000);
+      timerId = setTimeout(getData, 1000);
       messageExpired.value = response.data.message;
     } else {
       paymentProcessed = true;
@@ -141,24 +163,35 @@ const clearVirtualAccountData = () => {
   localStorage.removeItem("ewalletData");
 };
 
-const getExternalIdFromLocalStorage = (bankCode) => {
+const getValueFromLocalStorage = (bankCode, fieldName) => {
   const dataVirtualAccount =
     JSON.parse(localStorage.getItem("virtualAccountData")) || {};
-  const encryptedExternalId = dataVirtualAccount[bankCode]?.external_id;
+  const encryptedValue = dataVirtualAccount[bankCode]?.[fieldName];
 
-  if (encryptedExternalId) {
+  if (encryptedValue) {
     try {
-      const decryptedExternalId = CryptoJS.AES.decrypt(
-        encryptedExternalId,
+      const decryptedValue = CryptoJS.AES.decrypt(
+        encryptedValue,
         "U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0="
       ).toString(CryptoJS.enc.Utf8);
-      return decryptedExternalId;
+      return decryptedValue;
     } catch (error) {
-      console.error("Error decrypting external_id:", error.message || error);
+      console.error(`Error decrypting ${fieldName}:`, error.message || error);
       return null;
     }
   }
 
   return null;
 };
+
+const removeKeyFromLocalStorage = (bankCode) => {
+  const dataVirtualAccount =
+    JSON.parse(localStorage.getItem("virtualAccountData")) || {};
+  
+  if (dataVirtualAccount.hasOwnProperty(bankCode)) {
+    delete dataVirtualAccount[bankCode];
+    localStorage.setItem("virtualAccountData", JSON.stringify(dataVirtualAccount));
+  }
+};
+
 </script>

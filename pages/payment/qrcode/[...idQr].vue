@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    {{ countdown }}
     <h6>Status Pembayaran: {{ transactionData?.status }}</h6>
     <h6>Qr Code</h6>
     <v-card class="rounded-pill" color="grey-lighten-4">
@@ -89,7 +90,7 @@ import CryptoJS from "crypto-js";
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useQrStore } from "~/stores/statePayment/useQrCode";
-import { useRedirect } from '~/stores/statePayment/useRedirect';
+import { useRedirect } from "~/stores/statePayment/useRedirect";
 const { $swal } = useNuxtApp();
 const qaStore = useQrStore();
 const redirectStore = useRedirect();
@@ -99,6 +100,8 @@ const expireDate = ref("");
 const route = useRoute();
 const router = useRouter();
 const countdown = ref("");
+const expirationDates = ref("")
+const waktu = ref("")
 const datas = [
   "Masukkan Virtual Account yang Anda ingin bayarkan",
   "Masukan nominal, kemudian pilih Lanjutkan",
@@ -119,8 +122,7 @@ onMounted(() => {
   // updateCountdown();
 });
 
-redirectStore.setPaymentSuccess(true)
-
+redirectStore.setPaymentSuccess(true);
 
 onUnmounted(() => {
   clearTimeout(timerId);
@@ -131,7 +133,7 @@ const getData = () => {
     if (paymentProcessed) {
       return;
     }
-    const externalId = getExternalIdFromLocalStorage(route.params.idQr[0]);
+    const externalId = getValueFromLocalStorage(route.params.idQr[0], 'external_id');
     axios
       .get(
         `http://localhost:3001/payment/INV-TNOS123/${route.params.idQr[0]}/${externalId}/get`
@@ -140,6 +142,8 @@ const getData = () => {
         if (paymentProcessed) {
           return;
         }
+        const expiredDate = getValueFromLocalStorage(route.params.idQr[0], 'expired_date');
+
         const expirationDateUTC = new Date(response.data.expiration_date);
 
         const options = { timeZone: "Asia/Jakarta" };
@@ -149,8 +153,26 @@ const getData = () => {
         );
         transactionData.value = response.data;
         expireDate.value = expirationDateLocal;
+
+        expirationDates.value = new Date(expiredDate);
+
+        const datess = new Date();
+
+        const sisaWaktu = expirationDates.value - datess;
+
+        const menit = Math.floor(sisaWaktu / (1000 * 60));
+        const detik = Math.floor((sisaWaktu % (1000 * 60)) / 1000);
+
+        waktu.value = `${menit} menit - ${detik} detik`;
+
+        countdown.value = waktu.value;
+
+        if (sisaWaktu < 0) {
+          removeKeyFromLocalStorage(route.params.idQr[0]);
+          router.push("/payment/virtualaccount");
+        }
         if (response.data.status !== "SUCCEEDED") {
-          timerId = setTimeout(getData, 5000);
+          timerId = setTimeout(getData, 1000);
           messageExpired.value = response.data.message;
         } else {
           clearTimeout(timerId);
@@ -170,24 +192,34 @@ const clearVirtualAccountData = () => {
   localStorage.removeItem("ewalletData");
 };
 
-const getExternalIdFromLocalStorage = (channelCode) => {
-  const dataVirtualAccount =
+const getValueFromLocalStorage = (channelCode, fieldName) => {
+  const dataQr =
     JSON.parse(localStorage.getItem("qrCodeData")) || {};
-  const encryptedExternalId = dataVirtualAccount[channelCode]?.external_id;
+  const encryptedValue = dataQr[channelCode]?.[fieldName];
 
-  if (encryptedExternalId) {
+  if (encryptedValue) {
     try {
-      const decryptedExternalId = CryptoJS.AES.decrypt(
-        encryptedExternalId,
+      const decryptedValue = CryptoJS.AES.decrypt(
+        encryptedValue,
         "U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0="
       ).toString(CryptoJS.enc.Utf8);
-      return decryptedExternalId;
+      return decryptedValue;
     } catch (error) {
-      console.error("Error decrypting external_id:", error.message || error);
+      console.error(`Error decrypting ${fieldName}:`, error.message || error);
       return null;
     }
   }
 
   return null;
+};
+
+const removeKeyFromLocalStorage = (channelCode) => {
+  const dataQr =
+    JSON.parse(localStorage.getItem("qrCodeData")) || {};
+  
+  if (dataQr.hasOwnProperty(channelCode)) {
+    delete dataQr[channelCode];
+    localStorage.setItem("qrCodeData", JSON.stringify(dataQr));
+  }
 };
 </script>
