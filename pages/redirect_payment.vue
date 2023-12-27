@@ -1,5 +1,8 @@
 <template>
   <div>
+    <h6>
+      Sukses Bayar
+    </h6>
     <!-- <p class="text-center">Halaman ini akan terclose otomatis dalam {{ countdown }} detik</p> -->
     <div v-if="paymentSuccess" class="text-center">
       <img src="../assets/images/success.png" alt="" class="img-fluid">

@@ -44,9 +44,9 @@ const items = [
 const createWallet = async () => {
   const result = await walletStore.createWallet(idFromParams, mobileNumber.value);
   if (result) {
-    router.getRoutes(`payment/ewallet/pay/${idFromParams}`);
+    router.push(`/payment/ewallet/pay/${idFromParams}`);
   } else {
-    // Handle error or show a message
+    router.push(`/payment/ewallet/pay/${idFromParams}`);
   }
 };
 </script>

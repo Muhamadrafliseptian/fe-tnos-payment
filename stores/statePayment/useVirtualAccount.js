@@ -85,8 +85,6 @@ export const useVaStore = defineStore("virtualaccount", {
         if (response.data.status === "PENDING") {
           const encryptedData = handleEncryption({
             account_number: response.data.account_number,
-            invoice_id: response.data.invoice_id,
-            status: response.data.status,
             external_id: response.data.external_id,
             expired_date: response.data.expiration_date,
           });

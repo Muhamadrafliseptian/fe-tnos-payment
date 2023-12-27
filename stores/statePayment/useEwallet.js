@@ -69,8 +69,6 @@ export const useEwalletStore = defineStore("ewallet", {
           case "ID_LINKAJA":
           case "ID_ASTRAPAY":
             redirectUrl = {
-              desktop_web_checkout_url:
-                response.data.actions.desktop_web_checkout_url,
               mobile_web_checkout_url:
                 response.data.actions.mobile_web_checkout_url,
             };
@@ -87,11 +85,9 @@ export const useEwalletStore = defineStore("ewallet", {
 
         if (response.data.status === "PENDING") {
           ewalletData[response.data.channel_code] = {
-            invoice_id: response.data.invoice_id,
-            status: response.data.status,
             external_id: response.data.external_id,
             expired_date: response.data.expiration_date,
-            url: redirectUrl,
+            redirectUrl,
           };
 
           localStorage.setItem("ewalletData", JSON.stringify(ewalletData));

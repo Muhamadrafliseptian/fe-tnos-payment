@@ -80,8 +80,6 @@ export const useQrStore = defineStore("qrcode", {
 
         if (response.data.status === "ACTIVE") {
           const encryptedData = handleEncryption({
-            invoice_id: response.data.invoice_id,
-            status: response.data.status,
             external_id: response.data.external_id,
             expired_date: response.data.expires_at,
           });
