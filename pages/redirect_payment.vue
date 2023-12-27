@@ -3,14 +3,14 @@
     <img src="../assets/images/success.png" alt="" class="img-fluid" />
     <h5>Terima kasih, Pembayaran Telah Kami Terima</h5>
   </div>
-  <div class="text-center mt-5">
+  <!-- <div class="text-center mt-5">
     <v-btn
       color="indigo"
       text="tutup aplikasi"
       class="text-caption w-50"
       rounded="pill"
     ></v-btn>
-  </div>
+  </div> -->
 </template>
 
 <script setup>

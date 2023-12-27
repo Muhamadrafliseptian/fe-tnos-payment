@@ -1,19 +1,41 @@
 <template>
   <v-container>
-    {{ countdown }}
-    <h6>Status Pembayaran: {{ transactionData?.status }}</h6>
-    <h6>Qr Code</h6>
-    <v-card class="rounded-pill" color="grey-lighten-4">
+    <div class="d-flex">
+      <div class="me-3">
+        <b>
+          <v-icon
+            icon="mdi mdi-keyboard-backspace"
+            class="mb-3"
+            @click="router.go(-1)"
+            color="black"
+          ></v-icon>
+        </b>
+      </div>
+      <h6 class="mb-5">Bayar Dengan QRIS</h6>
+    </div>
+    <v-card class="rounded-lg" color="grey-lighten-4">
       <v-card-text class="ms-3">
         <p class="mb-0">
           <b class="text-secondary" color="grey"
             >Selesaikan Pembayaran Anda Sebelum:</b
           >
         </p>
-        <p class="mb-0" id="countdown">
+        <p class="mb-3" id="countdown">
+          <b> {{ expireDate }} WIB </b>
+        </p>
+        <p class="mb-0">
+          <b class="text-secondary" color="grey">Sisa waktu pembayaran: </b>
+        </p>
+        <p class="mb-3">
           <b>
-            {{ expireDate }}
+            {{ countdown }}
           </b>
+        </p>
+        <p class="mb-0">
+          <b class="text-secondary" color="grey">Jumlah yang harus dibayar: </b>
+        </p>
+        <p>
+          <b> Rp. {{ transactionData?.amount }} </b>
         </p>
       </v-card-text>
     </v-card>
@@ -100,8 +122,8 @@ const expireDate = ref("");
 const route = useRoute();
 const router = useRouter();
 const countdown = ref("");
-const expirationDates = ref("")
-const waktu = ref("")
+const expirationDates = ref("");
+const waktu = ref("");
 const datas = [
   "Masukkan Virtual Account yang Anda ingin bayarkan",
   "Masukan nominal, kemudian pilih Lanjutkan",
@@ -132,7 +154,10 @@ const getData = () => {
     if (paymentProcessed) {
       return;
     }
-    const externalId = getValueFromLocalStorage(route.params.idQr[0], 'external_id');
+    const externalId = getValueFromLocalStorage(
+      route.params.idQr[0],
+      "external_id"
+    );
     axios
       .get(
         `http://localhost:3001/payment/INV-TNOS123/${route.params.idQr[0]}/${externalId}/get`
@@ -141,7 +166,10 @@ const getData = () => {
         if (paymentProcessed) {
           return;
         }
-        const expiredDate = getValueFromLocalStorage(route.params.idQr[0], 'expired_date');
+        const expiredDate = getValueFromLocalStorage(
+          route.params.idQr[0],
+          "expired_date"
+        );
 
         const expirationDateUTC = new Date(response.data.expiration_date);
 
@@ -192,8 +220,7 @@ const clearVirtualAccountData = () => {
 };
 
 const getValueFromLocalStorage = (channelCode, fieldName) => {
-  const dataQr =
-    JSON.parse(localStorage.getItem("qrCodeData")) || {};
+  const dataQr = JSON.parse(localStorage.getItem("qrCodeData")) || {};
   const encryptedValue = dataQr[channelCode]?.[fieldName];
 
   if (encryptedValue) {
@@ -213,9 +240,8 @@ const getValueFromLocalStorage = (channelCode, fieldName) => {
 };
 
 const removeKeyFromLocalStorage = (channelCode) => {
-  const dataQr =
-    JSON.parse(localStorage.getItem("qrCodeData")) || {};
-  
+  const dataQr = JSON.parse(localStorage.getItem("qrCodeData")) || {};
+
   if (dataQr.hasOwnProperty(channelCode)) {
     delete dataQr[channelCode];
     localStorage.setItem("qrCodeData", JSON.stringify(dataQr));
