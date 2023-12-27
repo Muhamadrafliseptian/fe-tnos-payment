@@ -1,27 +1,45 @@
 <template>
-  <h6 class="mb-5">Bayar Dengan E-Wallet</h6>
+  <div class="d-flex">
+    <b class="me-3">
+      <v-icon
+        icon="mdi mdi-keyboard-backspace"
+        class="mb-3"
+        @click="this.$router.go(-1)"
+        color="black"
+      ></v-icon>
+    </b>
+    <h6 class="mb-5">Bayar Dengan E-Wallet</h6>
+  </div>
   <template v-for="data in bank">
     <template v-if="isLoading">
       <v-skeleton-loader type="paragraph"></v-skeleton-loader>
     </template>
     <CardBank
       v-else
-      :Subtitle="data.channel_code"
+      Subtitle="lorem ipsum dolor sit amet"
       :Title="data.channel_name"
       :key="data.id_ewallet"
       class="mb-3"
       @click="handleRoute(data.channel_code)"
-    />
+    >
+    <template #avatarImage>
+      <v-avatar size="90" class="ms-4" rounded="0">
+        <v-img :src="logoShopee"></v-img>
+      </v-avatar>
+    </template>
+  </CardBank>
   </template>
 </template>
 
 <script>
 import axios from "axios";
+import Shopee from '@/assets/images/bank_logos/shopee.png'
 
 export default {
   data() {
     return {
       bank: [],
+      logoShopee: Shopee,
       isLoading: false,
     };
   },

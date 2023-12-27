@@ -6,10 +6,10 @@
           
         </slot>
       <div class="mt-2">
-        <v-card-title class="text-h8">
+        <v-card-title class="text-subtitle-1 mb-0">
           {{ Title }}
         </v-card-title>
-        <v-card-subtitle>
+        <v-card-subtitle class="text-caption">
           {{ Subtitle }}
         </v-card-subtitle>
       </div>

@@ -21,7 +21,7 @@
       <v-btn
         @click="createWallet"
         color="indigo"
-        text="lanjutkan"
+        :text="'lanjutkan buka aplikasi ' + idFromParams"
         class="rounded-pill mt-5"
       ></v-btn>
     </div>

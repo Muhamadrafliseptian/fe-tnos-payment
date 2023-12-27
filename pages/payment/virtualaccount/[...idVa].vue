@@ -7,18 +7,7 @@
       color="black"
     ></v-icon>
   </b>
-  <div v-if="messageExpired" class="mt-3 text-center">
-    <!-- <p class="mb-0">{{ messageExpired }}</p>
-    <p class="mb-0">Silahkan pilih metode pembayaran lagi</p>
-    <v-btn
-      class="text-caption"
-      text="kembali"
-      width="100"
-      color="blue"
-      @click="router.back(-1)"
-    ></v-btn> -->
-  </div>
-  <div v-else>
+  <div>
     <v-card color="grey-lighten-5" class="text-caption">
       <v-card-text>
         <h6 color="indigo">{{ route.params.idVa[0] }}</h6>

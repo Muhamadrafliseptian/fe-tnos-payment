@@ -1,6 +1,6 @@
 <template>
   <div class="full-page-embed">
-    <h5>
+    <h5 hidden>
       Halaman Pembayaran <br />
       {{ countdown }}
     </h5>
