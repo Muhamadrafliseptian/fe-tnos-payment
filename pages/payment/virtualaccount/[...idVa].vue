@@ -134,7 +134,7 @@ const getData = async () => {
     const menit = Math.floor(sisaWaktu / (1000 * 60));
     const detik = Math.floor((sisaWaktu % (1000 * 60)) / 1000);
 
-    waktu.value = `${menit} menit - ${detik} detik`;
+    waktu.value = `${menit} menit ${detik} detik`;
 
     countdown.value = waktu.value;
 

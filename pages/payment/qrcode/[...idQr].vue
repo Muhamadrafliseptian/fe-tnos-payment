@@ -168,7 +168,7 @@ const getData = () => {
 
         if (sisaWaktu < 0) {
           removeKeyFromLocalStorage(route.params.idQr[0]);
-          router.push("/payment/virtualaccount");
+          router.push("/payment/qrcode");
         }
         if (response.data.status !== "SUCCEEDED") {
           timerId = setTimeout(getData, 1000);

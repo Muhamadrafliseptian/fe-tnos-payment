@@ -1,14 +1,19 @@
 <template>
-  <v-card
-    :rounded="Rounded"
-    :title="Title"
-    :subtitle="Subtitle"
-    :color="Color"
-    height="100"
-    class="pt-2 mx-auto"
-    :prepend-avatar="Avatar"
-    :elevation="Elevation"
-  >
+  <v-card color="white" :rounded="Rounded" :elevation="Elevation">
+    <div class="d-flex">
+      <!-- <v-img :src="Avatar"></v-img> -->
+      <slot name="avatarImage">
+          
+        </slot>
+      <div class="mt-2">
+        <v-card-title class="text-h8">
+          {{ Title }}
+        </v-card-title>
+        <v-card-subtitle>
+          {{ Subtitle }}
+        </v-card-subtitle>
+      </div>
+    </div>
   </v-card>
 </template>
 <script setup>
@@ -24,7 +29,7 @@ const props = defineProps({
   },
   Avatar: {
     type: String,
-    default: LogoBank,
+    default: "",
   },
   Color: {
     type: String,
