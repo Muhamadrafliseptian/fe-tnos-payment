@@ -1,11 +1,6 @@
 <template>
   <b>
-    <v-icon
-      icon="mdi mdi-keyboard-backspace"
-      class="mb-3"
-      @click="router.back(-1)"
-      color="black"
-    ></v-icon>
+    <v-icon icon="mdi mdi-keyboard-backspace" class="mb-3" @click="router.back(-1)" color="black"></v-icon>
   </b>
   <div>
     <v-card color="grey-lighten-5" class="text-caption">
@@ -32,13 +27,7 @@
     <v-card class="mt-4">
       <v-container>
         <v-timeline density="compact" side="end">
-          <v-timeline-item
-            class="mb-4"
-            dot-color="indigo"
-            size="small"
-            v-for="(item, index) in datas"
-            :key="index"
-          >
+          <v-timeline-item class="mb-4" dot-color="indigo" size="small" v-for="(item, index) in datas" :key="index">
             <div>
               {{ item }}
             </div>
@@ -176,7 +165,7 @@ const getValueFromLocalStorage = (bankCode, fieldName) => {
 const removeKeyFromLocalStorage = (bankCode) => {
   const dataVirtualAccount =
     JSON.parse(localStorage.getItem("virtualAccountData")) || {};
-  
+
   if (dataVirtualAccount.hasOwnProperty(bankCode)) {
     delete dataVirtualAccount[bankCode];
     localStorage.setItem("virtualAccountData", JSON.stringify(dataVirtualAccount));

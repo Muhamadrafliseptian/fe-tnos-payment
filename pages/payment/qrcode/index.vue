@@ -3,29 +3,20 @@
     <div class="d-flex">
       <div class="me-3">
         <b>
-          <v-icon
-            icon="mdi mdi-keyboard-backspace"
-            class="mb-3"
-            @click="router.push('/')"
-            color="black"
-          ></v-icon>
+          <v-icon icon="mdi mdi-keyboard-backspace" class="mb-3" @click="router.push('/')" color="black"></v-icon>
         </b>
       </div>
       <h6 class="mb-5">Bayar Dengan QRIS</h6>
     </div>
     <template v-for="data in qaStore.qrcodes" :key="data.id_qr">
       <div>
-        <CardBank
-          Subtitle="lorem ipsum dolor sit amet"
-          :Title="data.channel_name"
-          @click="handleQrCodeCreation(data.channel_code)"
-          class="mb-3"
-        >
-        <template #avatarImage>
-          <v-avatar size="100" class="ms-4" rounded="0">
-            <v-img :src="logoBank"></v-img>
-          </v-avatar>
-        </template>
+        <CardBank Subtitle="lorem ipsum dolor sit amet" :Title="data.channel_name"
+          @click="handleQrCodeCreation(data.channel_code)" class="mb-3">
+          <template #avatarImage>
+            <v-avatar size="100" class="ms-4" rounded="0">
+              <v-img :src="logoBank"></v-img>
+            </v-avatar>
+          </template>
         </CardBank>
       </div>
     </template>

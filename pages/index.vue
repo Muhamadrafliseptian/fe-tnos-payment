@@ -40,6 +40,11 @@ const data = [
       title: "E-Wallet",
       icon: "mdi mdi-wallet",
     },
+    cardEmpat: {
+      id: "directdebit",
+      title: "Direct Debit",
+      icon: "mdi mdi-wallet",
+    },
   },
 ];
 

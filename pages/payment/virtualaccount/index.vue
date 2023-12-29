@@ -3,24 +3,14 @@
     <div class="d-flex">
       <div class="me-3">
         <b>
-          <v-icon
-            icon="mdi mdi-keyboard-backspace"
-            class="mb-3"
-            @click="router.push('/')"
-            color="black"
-          ></v-icon>
+          <v-icon icon="mdi mdi-keyboard-backspace" class="mb-3" @click="router.push('/')" color="black"></v-icon>
         </b>
       </div>
       <h6 class="mb-5">Bayar Dengan Virtual Account</h6>
     </div>
     <template v-for="data in vaStore.banks" :key="data.id_ewallet">
       <div v-if="data.is_activated">
-        <CardBank
-          :Subtitle="data.code"
-          :Title="data.name"
-          @click="createVirtualAccount(data.code)"
-          class="mb-3"
-        >
+        <CardBank :Subtitle="data.code" :Title="data.name" @click="createVirtualAccount(data.code)" class="mb-3">
           <template #avatarImage>
             <v-avatar size="100" class="ms-4" rounded="0">
               <v-img :src="imageLogo[0]"></v-img>

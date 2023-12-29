@@ -3,12 +3,7 @@
     <div class="d-flex">
       <div class="me-3">
         <b>
-          <v-icon
-            icon="mdi mdi-keyboard-backspace"
-            class="mb-3"
-            @click="router.go(-1)"
-            color="black"
-          ></v-icon>
+          <v-icon icon="mdi mdi-keyboard-backspace" class="mb-3" @click="router.go(-1)" color="black"></v-icon>
         </b>
       </div>
       <h6 class="mb-5">Bayar Dengan QRIS</h6>
@@ -16,9 +11,7 @@
     <v-card class="rounded-lg" color="grey-lighten-4">
       <v-card-text class="ms-3">
         <p class="mb-0">
-          <b class="text-secondary" color="grey"
-            >Selesaikan Pembayaran Anda Sebelum:</b
-          >
+          <b class="text-secondary" color="grey">Selesaikan Pembayaran Anda Sebelum:</b>
         </p>
         <p class="mb-3" id="countdown">
           <b> {{ expireDate }} WIB </b>
@@ -46,12 +39,7 @@
             <v-img :src="imageQris" :width="180" :height="100"></v-img>
           </v-col>
           <v-col>
-            <v-img
-              :src="imageGpn"
-              :width="50"
-              class="mt-5 ms-5"
-              :height="50"
-            ></v-img>
+            <v-img :src="imageGpn" :width="50" class="mt-5 ms-5" :height="50"></v-img>
           </v-col>
         </v-row>
         <v-card-text class="text-center text-light">
@@ -60,29 +48,17 @@
           </p>
           <p class="mb-0">NMID: 12738828192039</p>
         </v-card-text>
-        <v-img
-          :src="imageQrCode"
-          color="white"
-          class="mt-5 rounded-xl"
-          :elevation="10"
-        ></v-img>
+        <v-img :src="imageQrCode" color="white" class="mt-5 rounded-xl" :elevation="10"></v-img>
       </v-container>
     </v-card>
     <div class="text-center mt-5">
-      <v-btn
-        @click="sheet = !sheet"
-        text="Lihat cara pembayaran"
-        class="rounded-xl text-caption"
-        color="blue-darken-4"
-      ></v-btn>
+      <v-btn @click="sheet = !sheet" text="Lihat cara pembayaran" class="rounded-xl text-caption"
+        color="blue-darken-4"></v-btn>
       <v-bottom-sheet v-model="sheet">
         <v-card class="rounded-xl">
           <v-card-text>
             <div class="text-center">
-              <v-icon
-                icon="mdi mdi-drag-horizontal-variant"
-                @click="sheet = !sheet"
-              ></v-icon>
+              <v-icon icon="mdi mdi-drag-horizontal-variant" @click="sheet = !sheet"></v-icon>
             </div>
             <div class="p-2">
               <h6>Cara Transaksi Menggunakan QR Bayar</h6>

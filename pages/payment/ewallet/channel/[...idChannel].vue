@@ -3,12 +3,7 @@
     <p class="text-caption">
       <b> Masukkan nomor yang terdaftar di {{ idFromParams }} </b>
     </p>
-    <v-text-field
-      clearable
-      hide-details="auto"
-      :label="'Nomor ' + idFromParams"
-      v-model="mobileNumber"
-    ></v-text-field>
+    <v-text-field clearable hide-details="auto" :label="'Nomor ' + idFromParams" v-model="mobileNumber"></v-text-field>
     <div class="mt-5">
       <ol>
         <li v-for="data in items" class="text-caption mb-3">
@@ -16,14 +11,9 @@
         </li>
       </ol>
     </div>
-
     <div class="text-center">
-      <v-btn
-        @click="createWallet"
-        color="indigo"
-        :text="'lanjutkan buka aplikasi ' + idFromParams"
-        class="rounded-pill mt-5"
-      ></v-btn>
+      <v-btn @click="createWallet" color="indigo" :text="'lanjutkan buka aplikasi ' + idFromParams"
+        class="rounded-pill mt-5"></v-btn>
     </div>
   </v-container>
 </template>

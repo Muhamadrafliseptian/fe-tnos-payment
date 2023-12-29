@@ -1,6 +1,6 @@
 <template>
   <div class="full-page-embed">
-    <h5 hidden>
+    <h5>
       Halaman Pembayaran <br />
       {{ countdown }}
     </h5>
@@ -50,7 +50,7 @@ const ewalletValue = (walletCode, fieldName) => {
       const value = storageValue.toString();
       const valueUrl = urlValue.toString();
       return { value, valueUrl };
-    } catch (e) {}
+    } catch (e) { }
   }
 };
 
@@ -99,8 +99,8 @@ const getData = async () => {
     countdown.value = waktu.value;
 
     if (sisaWaktu < 0) {
-      // removeKeyFromLocalStorage(route.params.idPay[0]);
-      router.push("/payment/virtualaccount");
+      removeKeyFromLocalStorage(route.params.idPay[0]);
+      router.push("/payment/ewallet");
     }
 
     if (response.data.status !== "SUCCEEDED") {
@@ -130,6 +130,15 @@ const getDataUrl = () => {
     stagingPayment.value = valueUrl;
   } else {
     console.log("error");
+  }
+};
+
+const removeKeyFromLocalStorage = (walletCode) => {
+  const dataQr = JSON.parse(localStorage.getItem("ewalletData")) || {};
+
+  if (dataQr.hasOwnProperty(walletCode)) {
+    delete dataQr[walletCode];
+    localStorage.setItem("ewalletData", JSON.stringify(dataQr));
   }
 };
 
