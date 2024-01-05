@@ -32,7 +32,7 @@ const secretKey = "ajajdakdja3ijdaidahbc";
 const mobileNumber = ref("+6281411126356");
 const cashTag = ref("$test")
 const items = [
-  "Buka aplikasi DANA dan cek notifikasi untuk menyelesaikan pembayaran",
+  "Buka aplikasi dan cek notifikasi untuk menyelesaikan pembayaran",
   "Pastikan anda melakukan pembayaran dalam waktu 30 menit untuk menghindari pembatalan otomatis",
 ];
 

@@ -104,7 +104,7 @@ const getData = async () => {
     } else {
       paymentProcessed = true;
       clearTimeout(timerId);
-      clearVirtualAccountData();
+      clearStorage();
       router.push("/redirect_payment");
     }
   } catch (er) {
@@ -112,7 +112,7 @@ const getData = async () => {
   }
 };
 
-const clearVirtualAccountData = () => {
+const clearStorage = () => {
   localStorage.removeItem("virtualAccountData");
   localStorage.removeItem("qrCodeData");
   localStorage.removeItem("ewalletData");
