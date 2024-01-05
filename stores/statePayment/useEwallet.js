@@ -39,7 +39,8 @@ export const useEwalletStore = defineStore("ewallet", {
       }
     },
 
-    async createWallet(id, mobileNumber) {
+    async createWallet(id, mobileNumber, cashTag) {
+      console.log('halo');
       const ewalletData = JSON.parse(localStorage.getItem("ewalletData")) || {};
 
       const checkExistingEwallet = async () => {
@@ -60,7 +61,7 @@ export const useEwalletStore = defineStore("ewallet", {
 
         const response = await axios.post(
           "http://127.0.0.1:3001/payment/ewallet",
-          { channel_code: id, mobile_number: mobileNumber }
+          { channel_code: id, mobile_number: mobileNumber, cashtag: cashTag }
         );
 
         let redirectUrl = null;
@@ -93,11 +94,10 @@ export const useEwalletStore = defineStore("ewallet", {
           localStorage.setItem("ewalletData", JSON.stringify(ewalletData));
           return true;
         } else {
-          console.error("Error creating Qr:", response.data.errorMessage);
           return false;
         }
       } catch (error) {
-        console.error("An error occurred:", error.message || error);
+        console.log(error);
       }
     },
   },

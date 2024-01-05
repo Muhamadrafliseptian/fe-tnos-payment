@@ -1,9 +1,5 @@
 <template>
   <div class="full-page-embed">
-    <h5>
-      Halaman Pembayaran <br />
-      {{ countdown }}
-    </h5>
     <iframe width="100%" height="100%" :src="stagingPayment" />
   </div>
 </template>
@@ -66,9 +62,8 @@ const getData = async () => {
 
     const externalId = ewalletValue(route.params.idPay[0], "external_id");
     const response = await axios.get(
-      `http://localhost:3001/payment/INV-TNOS123/${route.params.idPay[0]}/${externalId}/get`
+      `http://localhost:3001/payment/INV-TNOS123/${route.params.idPay[0]}/${externalId.value}/get`
     );
-
     if (paymentProcessed) {
       return;
     }
