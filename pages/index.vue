@@ -1,9 +1,9 @@
 <template>
-  <v-row align="center" justify="center">
+  <!-- <v-row align="center" justify="center">
     <v-col>
       <CardSaldo Title="ID Pemesanan INV-123" Saldo="Rp. 200.000" />
     </v-col>
-  </v-row>
+  </v-row> -->
   <div class="mt-4">
     <h6>Metode Pembayaran</h6>
     <div v-for="datas in data[0]">
@@ -30,11 +30,6 @@ const data = [
     cardTiga: {
       id: "ewallet",
       title: "E-Wallet",
-      icon: "mdi mdi-wallet",
-    },
-    cardEmpat: {
-      id: "directdebit",
-      title: "Direct Debit",
       icon: "mdi mdi-wallet",
     },
   },
