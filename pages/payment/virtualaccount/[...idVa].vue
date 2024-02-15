@@ -44,6 +44,7 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useVaStore } from "@/stores/statePayment/useVirtualAccount";
 import { useRedirect } from "~/stores/statePayment/useRedirect";
+import { decryptData } from "~/pages/utils/decrypt";
 const { $swal } = useNuxtApp();
 const vaStore = useVaStore();
 const redirectStore = useRedirect();
@@ -92,15 +93,17 @@ const getData = async () => {
       return;
     }
 
+    const decrypt = decryptData(response.data);
+
     const expiredDate = getValueFromLocalStorage(route.params.idVa[0], 'expired_date');
 
-    const expirationDateUTC = new Date(response.data.expiration_date);
+    const expirationDateUTC = new Date(decrypt.expiration_date);
     const options = { timeZone: "Asia/Jakarta" };
     const expirationDateLocal = expirationDateUTC.toLocaleString(
       "id-ID",
       options
     );
-    transactionData.value = response.data;
+    transactionData.value = decrypt;
     expireDate.value = expirationDateLocal;
 
     expirationDates.value = new Date(expiredDate);
@@ -121,9 +124,9 @@ const getData = async () => {
       router.push('/payment/virtualaccount')
     }
 
-    if (response.data.status !== "PAID") {
+    if (decrypt.status !== "PAID") {
       timerId = setTimeout(getData, 1000);
-      messageExpired.value = response.data.message;
+      messageExpired.value = decrypt.message;
     } else {
       paymentProcessed = true;
       clearTimeout(timerId);

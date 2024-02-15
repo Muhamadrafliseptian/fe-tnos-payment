@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import { useRouter } from "vue-router";
+import { decryptData } from "~/pages/utils/decrypt";
 
 export const useQrStore = defineStore("qrcode", {
   state() {
@@ -30,7 +31,7 @@ export const useQrStore = defineStore("qrcode", {
       try {
         this.isLoading = true;
         const response = await axios.get("http://127.0.0.1:3001/qr_code");
-        this.qrcodes = response.data.data;
+        this.qrcodes = decryptData(response.data.data)
       } catch (error) {
         console.error("Error fetching bank data:", error);
       } finally {
