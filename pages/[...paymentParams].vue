@@ -5,16 +5,6 @@
       </v-col>
     </v-row> -->
     <div class="mt-4">
-      <p>
-        {{ 
-            $route.params.paymentParams[0]
-         }}
-    </p>
-    <p>
-        {{ 
-            $route.params.paymentParams[1]
-         }}
-    </p>
       <h6>Metode Pembayaran</h6>
       <div v-for="datas in data[0]">
         <CardPaymentMethod :Title="datas.title" Saldo="lorem ipsum dolor sit amet" Color="grey-lighten-4" Elevation="3"
