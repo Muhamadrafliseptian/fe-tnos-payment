@@ -1,0 +1,12 @@
+<template>
+    <p>
+        {{ 
+            $route.params.paymentParams[0]
+         }}
+    </p>
+    <p>
+        {{ 
+            $route.params.paymentParams[1]
+         }}
+    </p>
+</template>
