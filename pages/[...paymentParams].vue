@@ -1,26 +1,24 @@
 <template>
-    <!-- <v-row align="center" justify="center">
-      <v-col>
-        <CardSaldo Title="ID Pemesanan INV-123" Saldo="Rp. 200.000" />
-      </v-col>
-    </v-row> -->
     <div class="mt-4">
       <h6>Metode Pembayaran</h6>
       <div v-for="datas in data[0]">
         <CardPaymentMethod :Title="datas.title" Saldo="lorem ipsum dolor sit amet" Color="grey-lighten-4" Elevation="3"
-          class="mt-5" Rounded="rounded-lg" :IconKiri="datas.icon" @click="postClick(datas.id)" />
+          class="mt-5" Rounded="rounded-lg" :IconKiri="datas.icon" @click="postClick(datas.id, urlParams)" />
       </div>
     </div>
   </template>
   <script setup>
-  const router = useRouter();
   
+  const router = useRouter();
+
+  const urlParams = router.currentRoute.value.fullPath.split('/').slice(1).join('/')
+
   const data = [
     {
       cardSatu: {
         id: "virtualaccount",
         title: "Virtual Account",
-        icon: "mdi mdi-bank-circle-outline",
+        icon: "mdi mdi-bank-circle-outline"
       },
       cardDua: {
         id: "qrcode",
@@ -35,8 +33,8 @@
     },
   ];
   
-  const postClick = (id) => {
-    router.push(`/payment/${id}`);
+  const postClick = (id, urlParams) => {
+    router.push(`/payment/${id}/${urlParams}`);
   };
   </script>
   
