@@ -1,6 +1,14 @@
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+
 export default defineNuxtConfig({
   //...
+  // hooks: {
+  //   "pages:extend": (pages) => {
+  //     customRoutes.forEach((customRoute) => {
+  //       pages.push(customRoute)
+  //     })
+  //   }
+  // },
   build: {
     transpile: ['vuetify'],
   },
