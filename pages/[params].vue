@@ -8,8 +8,6 @@
     </div>
   </template>
   <script setup>
-
-  import CryptoJS from "crypto-js"
   
   const router = useRouter();
 
