@@ -120,7 +120,7 @@
       countdown.value = waktu.value;
   
       if (sisaWaktu < 0) {
-        removeKeyFromLocalStorage(route.params.idVa[0]);
+        removeKeyFromLocalStorage(route.params.id);
         router.push('/payment/virtualaccount')
       }
   
