@@ -123,6 +123,8 @@
         removeKeyFromLocalStorage(route.params.id);
         router.push('/payment/virtualaccount')
       }
+
+      console.log(decrypt.status);
   
       if (decrypt.status !== "PAID") {
         timerId = setTimeout(getData, 1000);
