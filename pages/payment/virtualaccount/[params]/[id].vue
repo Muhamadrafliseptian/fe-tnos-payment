@@ -123,8 +123,6 @@
         removeKeyFromLocalStorage(route.params.id);
         router.push('/payment/virtualaccount')
       }
-
-      console.log(decrypt.status);
   
       if (decrypt.status !== "PAID") {
         timerId = setTimeout(getData, 1000);
@@ -133,7 +131,7 @@
         paymentProcessed = true;
         clearTimeout(timerId);
         clearVirtualAccountData();
-        router.push("/redirect_payment");
+        router.push("/");
       }
     } catch (er) {
       console.log(er);
