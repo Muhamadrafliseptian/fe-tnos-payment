@@ -30,6 +30,11 @@
         title: "E-Wallet",
         icon: "mdi mdi-wallet",
       },
+      cardEmpat: {
+        id: "qrisbca",
+        title: "QRIS-BCA",
+        icon: "mdi mdi-wallet",
+      }
     },
   ];
   
