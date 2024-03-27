@@ -42,7 +42,7 @@ export const useVaStore = defineStore("virtualaccount", {
       }
     },
 
-    async createVirtualAccount(id) {
+    async createVirtualAccount(id, encryptAmount) {
       const virtualAccountData =
         JSON.parse(localStorage.getItem("virtualAccountData")) || {};
 
@@ -80,7 +80,7 @@ export const useVaStore = defineStore("virtualaccount", {
 
         const response = await axios.post(
           "http://127.0.0.1:3001/payment/virtualaccount",
-          { bank_code: id }
+          { bank_code: id, amount: encryptAmount }
         );
 
         if (response.data.status === "PENDING") {
