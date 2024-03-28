@@ -9,8 +9,8 @@
     <template v-if="isLoading">
       <v-skeleton-loader type="paragraph"></v-skeleton-loader>
     </template>
-    <CardBank v-else Subtitle="lorem ipsum dolor sit amet" :Title="data.channel_name" :key="data.id_ewallet" class="mb-3"
-      @click="handleRoute(data.channel_code, encryptAmount)">
+    <CardBank v-else Subtitle="lorem ipsum dolor sit amet" :Title="data.channel_name" :key="data.id_ewallet"
+      class="mb-3" @click="handleRoute(data.channel_code, encryptAmount)">
       <template #avatarImage>
         <v-avatar size="90" class="ms-4" rounded="0">
           <v-img :src="logoShopee"></v-img>
@@ -20,49 +20,32 @@
   </template>
 </template>
 
-<script>
+<script setup>
 import axios from "axios";
 import Shopee from '@/assets/images/bank_logos/shopee.png'
-import { useRouter } from "vue-router";
 import CryptoJS from "crypto-js"
+const bank = ref("")
+const loading = ref(false)
+const logoShopee = Shopee
+const encryptAmount = ref("20000")
+onMounted(() => {
+  getBank()
+})
+const router = useRouter()
+const getBank = async () => {
+  try {
+    loading.value = true
+    const response = await axios.get(
+      "http://127.0.0.1:3001/channel_ewallet"
+    );
+    bank.value = response.data.data;
+    loading.value = false;
+  } catch (error) {
+    console.error("Error fetching bank data:", error);
+  }
+}
 
-
-export default {
-  data() {
-    return {
-      bank: [],
-      logoShopee: Shopee,
-      isLoading: false,
-      urlParams: '',
-      encryptAmount: 0
-    };
-  },
-
-  async created() {
-    this.urlParams = this.$route.fullPath.split("/").slice(3).join("/")
-    const splitAmount = this.urlParams.split('|')[1]
-    this.encryptAmount = CryptoJS.AES.decrypt(atob(splitAmount), 'U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0=').toString(CryptoJS.enc.Utf8);
-
-    await this.getBank();
-  },
-
-  methods: {
-    async getBank() {
-      try {
-        this.isLoading = true;
-        const response = await axios.get(
-          "http://127.0.0.1:3001/channel_ewallet"
-        );
-        this.bank = response.data.data;
-        this.isLoading = false;
-      } catch (error) {
-        console.error("Error fetching bank data:", error);
-      }
-    },
-    handleRoute(id, encryptAmount) {
-      this.$router.push(`${this.urlParams}/${id}`)
-      // this.$router.push(`/payment/ewallet/channel/${id}/${encryptAmount}`);
-    },
-  },
-};
+const handleRoute = (id, encryptAmount) => {
+  router.push(`${encryptAmount}/${id}`)
+}
 </script>

@@ -3,7 +3,8 @@
     <div class="d-flex">
       <div class="me-3">
         <b>
-          <v-icon icon="mdi mdi-keyboard-backspace" class="mb-3" @click="router.push('/')" color="black"></v-icon>
+          <v-icon icon="mdi mdi-keyboard-backspace" class="mb-3" @click="router.push('/payment')"
+            color="black"></v-icon>
         </b>
       </div>
       <h6 class="mb-5">Bayar Dengan QRIS</h6>
@@ -17,6 +18,11 @@
         </template>
       </CardBank>
     </div>
+    <v-dialog v-model="loading" persistent content-class="modal">
+      <div class="text-center">
+        <v-progress-circular :size="70" :width="7" color="#1867C0" indeterminate></v-progress-circular>
+      </div>
+    </v-dialog>
   </div>
 </template>
 
@@ -28,6 +34,7 @@ import { useRouter } from "vue-router";
 import CryptoJS from 'crypto-js'
 import axios from 'axios';
 // const qaStore = useQrStore();
+const { $swal } = useNuxtApp();
 const router = useRouter();
 const timestamp = ref("")
 const accessToken = ref("")
@@ -35,6 +42,7 @@ const symmetricSignature = ref("")
 const body = ref("")
 const amount = ref("")
 const externalId = ref("")
+const loading = ref(false);
 
 onMounted(() => {
   // qaStore.initialize();
@@ -47,16 +55,6 @@ onMounted(() => {
     decryptDatas();
   }
 });
-
-// const handleQrCodeCreation = async (id) => {
-//   const result = await qaStore.createQrCode(id);
-//   if (result) {
-//     router.push(`qrcode/${id}`);
-//   } else {
-//     router.push(`qrcode/${id}`);
-//   }
-// };
-
 const decryptDatas = () => {
   const key = "yefaifbbceyyaya2-29491031jdanaannaeu2";
   const decryptData = {
@@ -77,6 +75,7 @@ const decryptDatas = () => {
 }
 
 const generateQris = () => {
+  loading.value = true;
   const config = {
     headers: {
       Authorization: `Bearer ${accessToken.value}`,
@@ -92,17 +91,38 @@ const generateQris = () => {
     };
 
     axios.post('http://localhost:3001/payment/bca/qris', body, config).then((response) => {
-      console.log('====================================');
-      console.log(response.data);
-      localStorage.setItem("qrcodeData", JSON.stringify(response.data));
-      console.log('====================================');
-      router.push('/payment/qrcode/id');
+      let responseStatus = response.data.responseBcaQris.responseCode
+      if (responseStatus === "2004700") {
+        loading.value = false;
+        localStorage.setItem("qrcodeData", JSON.stringify(response.data));
+        router.push('/payment/qrcode/id');
+      } else {
+        loading.value = false
+        $swal.fire({
+          title: "Galat",
+          text: response.data.responseBcaQris.responseMessage,
+          icon: "error",
+          showConfirmButton: true
+        }).then(()=> {
+          router.push('/payment')
+          localStorage.removeItem("qr")
+        })
+      }
+    }).catch((err) => {
+      loading.value = false;
+      console.log(err);
     });
   } else {
     console.log("Data qrcodeData sudah ada di local storage");
     router.push('/payment/qrcode/id');
+    loading.value = false;
   }
 };
-
-
 </script>
+<style>
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

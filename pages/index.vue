@@ -1,7 +1,7 @@
 <template>
     <div class="text-center">
       <img src="../assets/images/success.png" alt="" class="img-fluid" />
-      <h5>Terima kasih, Pembayaran Telah Kami Terima</h5>
+      <h5>Terima kasih Pembayaran Berhasil</h5>
     </div>
     <div class="text-center mt-5">
       <v-btn

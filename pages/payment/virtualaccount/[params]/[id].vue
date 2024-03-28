@@ -142,6 +142,8 @@
     localStorage.removeItem("virtualAccountData");
     localStorage.removeItem("qrCodeData");
     localStorage.removeItem("ewalletData");
+    localStorage.removeItem("qr");
+    localStorage.removeItem("qrcodeData");
   };
   
   const getValueFromLocalStorage = (bankCode, fieldName) => {
