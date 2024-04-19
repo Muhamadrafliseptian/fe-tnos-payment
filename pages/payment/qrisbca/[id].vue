@@ -43,7 +43,8 @@ const getData = async (amount) => {
             },
             "merchantId": "000002094",
             "terminalId": "A1026229",
-            "partnerReferenceNo": res.data.requestBody.partnerReferenceNo
+            "partnerReferenceNo": res.data.requestBody.partnerReferenceNo,
+            "validityPeriod": res.data.requestBody.validityPeriod.toString()
         };
 
         const headersData = {
