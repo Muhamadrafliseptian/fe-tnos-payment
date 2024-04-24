@@ -34,7 +34,7 @@ export const useVaStore = defineStore("virtualaccount", {
       try {
         this.isLoading = true;
         const response = await axios.get("http://127.0.0.1:3001/payment/bank");
-        this.banks = decryptData(response.data)
+        this.banks = decryptData(response.data);
       } catch (error) {
         console.error("Error fetching bank data:", error);
       } finally {
