@@ -49,7 +49,7 @@ const handleCardClick = (id) => {
   if (id === "qrcode") {
     postClick(fullParams, encryptAmount);
   } else {
-    router.push(`/payment/${id}/amount`);
+    router.push(`/payment/${id}/${urlParams}`);
   }
 }
 

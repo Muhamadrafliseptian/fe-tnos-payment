@@ -15,7 +15,7 @@
           class="mb-3">
           <template #avatarImage>
             <v-avatar size="100" class="ms-4" rounded="0">
-              <v-img :src="imageLogo[0]"></v-img>
+              <v-img :src="getBankLogo(data.code)"></v-img>
             </v-avatar>
           </template>
         </CardBank>
@@ -33,15 +33,15 @@
 import { ref, onMounted } from "vue";
 import { useVaStore } from "@/stores/statePayment/useVirtualAccount";
 import { useRouter } from "vue-router";
-import bcaLogo from "@/assets/images/bca.png"
-import bniLogo from "@/assets/images/bank_logos/bni.png";
-import mandiriLogo from "@/assets/images/bank_logos/mandiri.png";
-import bjbLogo from "@/assets/images/bank_logos/bjb.png";
-import briLogo from "@/assets/images/bank_logos/bri.png";
-import bsiLogo from "@/assets/images/bank_logos/bsi.png";
+import bcaLogo from "@/assets/images/logo_bank/Bank-12.png"
+import bniLogo from "@/assets/images/logo_bank/Bank-03.png";
+import permataLogo from "@/assets/images/logo_bank/Bank-06.png";
+import sahabatLogo from "@/assets/images/logo_bank/Bank-13.png";
+import mandiriLogo from "@/assets/images/logo_bank/Bank-05.png";
+import bjbLogo from "@/assets/images/logo_bank/BJB.png";
+import briLogo from "@/assets/images/logo_bank/Bank-04.png";
+import syariahLogo from "@/assets/images/logo_bank/Bank-07.png";
 import CryptoJS from "crypto-js"
-
-const imageLogo = [bniLogo, bjbLogo, briLogo, bsiLogo, mandiriLogo, bcaLogo];
 
 const vaStore = useVaStore();
 const router = useRouter();
@@ -52,10 +52,25 @@ onMounted(() => {
   vaStore.initialize();
 });
 
-// const splitAmount = urlParams.split('|')[1]
-// const encryptAmount = CryptoJS.AES.decrypt(atob(splitAmount), 'U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0=').toString(CryptoJS.enc.Utf8);
+const imageLogos = {
+  BCA: bcaLogo,
+  BNI: bniLogo,
+  MANDIRI: mandiriLogo,
+  PERMATA: permataLogo,
+  SAHABAT_SAMPOERNA: sahabatLogo,
+  BRI: briLogo,
+  BSI: syariahLogo,
+  BJB: bjbLogo
+}
 
-const encryptAmount = 20000
+const getBankLogo = (bankCode) => {
+  return imageLogos[bankCode]
+}
+
+const splitAmount = urlParams.split('|')[1]
+// console.log(splitAmount);
+const encryptAmount = CryptoJS.AES.decrypt(atob(splitAmount), 'U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0=').toString(CryptoJS.enc.Utf8);
+
 const createVirtualAccount = async (id, encryptAmount) => {
   loading.value = true
   const result = await vaStore.createVirtualAccount(id, encryptAmount);
