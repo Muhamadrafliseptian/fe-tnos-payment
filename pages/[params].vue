@@ -13,12 +13,16 @@
 </template>
 
 <script setup>
+import CryptoJS from 'crypto-js'
 import axios from 'axios';
 import { ref } from 'vue';
 
 const router = useRouter();
 const loading = ref(false);
+const fullParams = router.currentRoute.value.fullPath;
 const urlParams = router.currentRoute.value.fullPath.split('/').slice(1).join('/')
+const splitAmount = urlParams.split('|')[1]
+const encryptAmount = CryptoJS.AES.decrypt(atob(splitAmount), "U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0=").toString(CryptoJS.enc.Utf8)
 
 const data = [
   {
@@ -43,21 +47,24 @@ const data = [
 
 const handleCardClick = (id) => {
   if (id === "qrcode") {
-    postClick();
+    postClick(fullParams, encryptAmount);
   } else {
     router.push(`/payment/${id}/amount`);
   }
 }
 
-const postClick = () => {
+const postClick = (fullParams, amountPrice) => {
   loading.value = true;
+
+  // letCryptoJS.AES.decrypt(accessToken.value, key).toString(CryptoJS.enc.Utf8)
+  // console.log(fullParams);
   if (!localStorage.getItem("qr")) {
-    const amount = "1.00";
+    const amount = (amountPrice * 1).toFixed(2).toString()
     axios.post('http://localhost:3001/payment/bca/generate/qris_symmetric_signature', {
       amount
     }).then((response) => {
       loading.value = false;
-      router.push(`/payment/qrcode`);
+      router.push(`/payment/qrcode${fullParams}`);
       localStorage.setItem("qr", JSON.stringify(response.data));
     })
       .catch((error) => {
@@ -66,7 +73,7 @@ const postClick = () => {
       });
   } else {
     loading.value = false;
-    router.push(`/payment/qrcode`);
+    router.push(`/payment/qrcode${fullParams}`);
   }
 }
 </script>

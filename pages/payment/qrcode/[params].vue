@@ -54,10 +54,6 @@ onMounted(() => {
     symmetricSignature.value = qr.encryptedSymmetric;
     decryptDatas();
   }
-
-  const key = "yefaifbbceyyaya2-29491031jdanaannaeu2";
-  let decryptData = CryptoJS.AES.decrypt("U2FsdGVkX186QrtBqUI+c5jR3G8MOgrp0lFIlxz8a+fEqdjDCISz9DnOIuwbdrfFwUYZFT+B5doNJ7N8ZJ1bXPy7R7uayQmGBVhhAmCTPMgzDE9SmRNPDgVoBjKUgAEfFmN8AKRvyxBx8p6NVeQbKw7ORuQCZVbPFDUa8AfDipzK94G0/uh/jgslVETgTdAV0TtYlvE1Reo66Cgl5lvv1g==", key).toString(CryptoJS.enc.Utf8)
-  console.log(decryptData);
 });
 const decryptDatas = () => {
   const key = "yefaifbbceyyaya2-29491031jdanaannaeu2";
@@ -95,11 +91,12 @@ const generateQris = () => {
     };
 
     axios.post('http://localhost:3001/payment/bca/qris', body, config).then((response) => {
+      console.log(response);
       let responseStatus = response.data.responseBcaQris.responseCode
       if (responseStatus === "2004700") {
         loading.value = false;
         localStorage.setItem("qrcodeData", JSON.stringify(response.data));
-        router.push('/payment/qrcode/id');
+        router.push('/payment/qrcode/view/success');
       } else {
         loading.value = false
         $swal.fire({
@@ -108,7 +105,7 @@ const generateQris = () => {
           icon: "error",
           showConfirmButton: true
         }).then(()=> {
-          router.push('/payment')
+          router.push('/')
           localStorage.removeItem("qr")
         })
       }
@@ -118,7 +115,7 @@ const generateQris = () => {
     });
   } else {
     console.log("Data qrcodeData sudah ada di local storage");
-    router.push('/payment/qrcode/id');
+    router.push('/payment/qrcode/view/success');
     loading.value = false;
   }
 };
