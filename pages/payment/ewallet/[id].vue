@@ -10,7 +10,7 @@
       <v-skeleton-loader type="paragraph"></v-skeleton-loader>
     </template>
     <CardBank v-else :Subtitle="data.channel_name" :Title="data.channel_name" :key="data.id_ewallet"
-      class="mb-3" @click="handleRoute(data.channel_code, encryptAmount)">
+      class="mb-3" @click="handleRoute(data.channel_code, urlParams)">
       <template #avatarImage>
         <v-avatar size="90" class="ms-4" rounded="0">
           <v-img :src="getEwalletLogo(data.channel_name)"></v-img>
@@ -26,13 +26,12 @@ import LOGO_OVO from "@/assets/images/logo_ewallet/E-WALLET_OVO.png";
 import LOGO_LINK_AJA from "@/assets/images/logo_ewallet/E-WALLET_Link Aja.png";
 import LOGO_ASTRAPAY from "@/assets/images/logo_ewallet/E-WALLET_AstraPay.png";
 
-import Shopee from '@/assets/images/bank_logos/shopee.png'
-import CryptoJS from "crypto-js"
-
+const config = useRuntimeConfig();
 const bank = ref("")
 const loading = ref(false)
-const logoShopee = Shopee
-const encryptAmount = ref("20000")
+const router = useRouter()
+const urlParams = router.currentRoute.value.fullPath.split('/').slice(3).join('/')
+
 onMounted(() => {
   getBank()
 })
@@ -47,12 +46,11 @@ const getEwalletLogo = (code) => {
   return imageLogos[code]
 }
 
-const router = useRouter()
 const getBank = async () => {
   try {
     loading.value = true
     const response = await axios.get(
-      "http://127.0.0.1:3001/channel_ewallet"
+      `${config.public.apiBase}/channel_ewallet`
     );
     bank.value = response.data.data;
     loading.value = false;
@@ -61,7 +59,7 @@ const getBank = async () => {
   }
 }
 
-const handleRoute = (id, encryptAmount) => {
-  router.push(`${encryptAmount}/${id}`)
+const handleRoute = (id, paramsUrl) => {
+  router.push(`${paramsUrl}/${id}`)
 }
 </script>

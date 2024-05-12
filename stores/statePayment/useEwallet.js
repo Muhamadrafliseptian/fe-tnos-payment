@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import CryptoJS from "crypto-js";
+
+const config = useRuntimeConfig();
 
 export const useEwalletStore = defineStore("ewallet", {
   state() {
@@ -29,7 +30,7 @@ export const useEwalletStore = defineStore("ewallet", {
       try {
         this.isLoading = true;
         const response = await axios.get(
-          "http://127.0.0.1:3001/channel_ewallet"
+          `${config.public.apiBase}/channel_ewallet`
         );
         this.ewallets = response.data.data;
       } catch (error) {
@@ -60,7 +61,7 @@ export const useEwalletStore = defineStore("ewallet", {
         }
 
         const response = await axios.post(
-          "http://127.0.0.1:3001/payment/ewallet",
+          `${config.public.apiBase}/payment/ewallet`,
           { channel_code: id, mobile_number: mobileNumber, cashtag: cashTag }
         );
 

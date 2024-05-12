@@ -68,7 +68,6 @@ const getBankLogo = (bankCode) => {
 }
 
 const splitAmount = urlParams.split('|')[1]
-// console.log(splitAmount);
 const encryptAmount = CryptoJS.AES.decrypt(atob(splitAmount), 'U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0=').toString(CryptoJS.enc.Utf8);
 
 const createVirtualAccount = async (id, encryptAmount) => {

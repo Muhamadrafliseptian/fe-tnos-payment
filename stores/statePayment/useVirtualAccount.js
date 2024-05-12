@@ -3,6 +3,8 @@ import axios from "axios";
 import CryptoJS from "crypto-js";
 import { decryptData } from "~/pages/utils/decrypt";
 
+const config = useRuntimeConfig();
+
 export const useVaStore = defineStore("virtualaccount", {
   state() {
     return {
@@ -33,7 +35,7 @@ export const useVaStore = defineStore("virtualaccount", {
     async getAllVirtualAccount() {
       try {
         this.isLoading = true;
-        const response = await axios.get("http://127.0.0.1:3001/payment/bank");
+        const response = await axios.get(`${config.public.apiBase}/payment/bank`);
         this.banks = decryptData(response.data);
       } catch (error) {
         console.error("Error fetching bank data:", error);
@@ -79,7 +81,7 @@ export const useVaStore = defineStore("virtualaccount", {
         }
 
         const response = await axios.post(
-          "http://127.0.0.1:3001/payment/virtualaccount",
+          `${config.public.apiBase}/payment/virtualaccount`,
           { bank_code: id, amount: encryptAmount }
         );
 

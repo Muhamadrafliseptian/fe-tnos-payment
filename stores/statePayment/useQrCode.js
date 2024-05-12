@@ -4,6 +4,8 @@ import CryptoJS from "crypto-js";
 import { useRouter } from "vue-router";
 import { decryptData } from "~/pages/utils/decrypt";
 
+const config = useRuntimeConfig();
+
 export const useQrStore = defineStore("qrcode", {
   state() {
     return {
@@ -30,7 +32,7 @@ export const useQrStore = defineStore("qrcode", {
     async getQr() {
       try {
         this.isLoading = true;
-        const response = await axios.get("http://127.0.0.1:3001/qr_code");
+        const response = await axios.get(`${config.public.apiBase}/qr_code`);
         this.qrcodes = decryptData(response.data.data)
       } catch (error) {
         console.error("Error fetching bank data:", error);
@@ -75,7 +77,7 @@ export const useQrStore = defineStore("qrcode", {
         }
 
         const response = await axios.post(
-          "http://127.0.0.1:3001/payment/qrcode",
+          `${config.public.apiBase}/payment/qrcode`,
           { channel_code: id }
         );
 

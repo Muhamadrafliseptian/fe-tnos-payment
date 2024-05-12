@@ -34,6 +34,7 @@ import { useRouter } from "vue-router";
 import CryptoJS from 'crypto-js'
 import axios from 'axios';
 // const qaStore = useQrStore();
+
 const { $swal } = useNuxtApp();
 const router = useRouter();
 const timestamp = ref("")
@@ -43,6 +44,8 @@ const body = ref("")
 const amount = ref("")
 const externalId = ref("")
 const loading = ref(false);
+
+const config = useRuntimeConfig();
 
 onMounted(() => {
   // qaStore.initialize();
@@ -76,7 +79,7 @@ const decryptDatas = () => {
 
 const generateQris = () => {
   loading.value = true;
-  const config = {
+  const configHeaders = {
     headers: {
       Authorization: `Bearer ${accessToken.value}`,
       'X-Timestamp': `${timestamp.value}`,
@@ -90,7 +93,7 @@ const generateQris = () => {
       partnerReferenceNo: externalId.value,
     };
 
-    axios.post('http://localhost:3001/payment/bca/qris', body, config).then((response) => {
+    axios.post(`${config.public.apiBase}/payment/bca/qris`, body, configHeaders).then((response) => {
       console.log(response);
       let responseStatus = response.data.responseBcaQris.responseCode
       if (responseStatus === "2004700") {

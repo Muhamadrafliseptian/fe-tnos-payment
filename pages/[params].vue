@@ -18,6 +18,7 @@ import axios from 'axios';
 import { ref } from 'vue';
 
 const router = useRouter();
+const config = useRuntimeConfig();
 const loading = ref(false);
 const fullParams = router.currentRoute.value.fullPath;
 const urlParams = router.currentRoute.value.fullPath.split('/').slice(1).join('/')
@@ -31,16 +32,28 @@ const data = [
     icon: "mdi mdi-bank-circle-outline",
     saldo: "lorem ipsum dolor sit amet"
   },
+  // {
+  //   id: "qrcode",
+  //   title: "QRIS BCA",
+  //   icon: "mdi mdi-qrcode",
+  //   saldo: "lorem ipsum dolor sit amet"
+  // },
   {
-    id: "qrcode",
-    title: "QRIS",
-    icon: "mdi mdi-qrcode",
-    saldo: "lorem ipsum dolor sit amet"
+    "id": "qr-xendit",
+    "title": "QRIS",
+    "icon" : "mdi mdi-qrcode",
+    "saldo": "lorem ipsum dolor sit amet"
   },
   {
     id: "ewallet",
     title: "E-Wallet",
     icon: "mdi mdi-wallet",
+    saldo: "lorem ipsum dolor sit amet"
+  },
+  {
+    id: "paypal",
+    title: "Paypal",
+    icon: "mdi mdi-book",
     saldo: "lorem ipsum dolor sit amet"
   }
 ];
@@ -48,19 +61,35 @@ const data = [
 const handleCardClick = (id) => {
   if (id === "qrcode") {
     postClick(fullParams, encryptAmount);
+
+  } else if (id === "qr-xendit") {
+
+    postXenditQr(fullParams, encryptAmount);
+
   } else {
     router.push(`/payment/${id}/${urlParams}`);
+  }
+}
+
+const postXenditQr = (fullParams, amountPrice) => {
+  loading.value = true;
+  
+  if (!localStorage.getItem("qrXendit")) {
+    const amount = (amountPrice * 1).toFixed(2).toString();
+
+    
+  } else {
+    loading.value = false;
+    router.push(`/payment/qrcode`);
   }
 }
 
 const postClick = (fullParams, amountPrice) => {
   loading.value = true;
 
-  // letCryptoJS.AES.decrypt(accessToken.value, key).toString(CryptoJS.enc.Utf8)
-  // console.log(fullParams);
   if (!localStorage.getItem("qr")) {
     const amount = (amountPrice * 1).toFixed(2).toString()
-    axios.post('http://localhost:3001/payment/bca/generate/qris_symmetric_signature', {
+    axios.post(`${config.public.apiBase}/payment/bca/generate/qris_symmetric_signature`, {
       amount
     }).then((response) => {
       loading.value = false;

@@ -34,6 +34,8 @@ import { useRouter } from "vue-router";
 import CryptoJS from 'crypto-js'
 import axios from 'axios';
 // const qaStore = useQrStore();
+
+const config = useRuntimeConfig();
 const { $swal } = useNuxtApp();
 const router = useRouter();
 const timestamp = ref("")
@@ -80,7 +82,7 @@ const decryptDatas = () => {
 
 const generateQris = () => {
   loading.value = true;
-  const config = {
+  const configHeaders = {
     headers: {
       Authorization: `Bearer ${accessToken.value}`,
       'X-Timestamp': `${timestamp.value}`,
@@ -94,7 +96,7 @@ const generateQris = () => {
       partnerReferenceNo: externalId.value,
     };
 
-    axios.post('http://localhost:3001/payment/bca/qris', body, config).then((response) => {
+    axios.post(`${config.public.apiBase}/payment/bca/qris`, body, configHeaders).then((response) => {
       let responseStatus = response.data.responseBcaQris.responseCode
       if (responseStatus === "2004700") {
         loading.value = false;
@@ -107,7 +109,7 @@ const generateQris = () => {
           text: response.data.responseBcaQris.responseMessage,
           icon: "error",
           showConfirmButton: true
-        }).then(()=> {
+        }).then(() => {
           router.push('/payment')
           localStorage.removeItem("qr")
         })
