@@ -6,7 +6,7 @@ import { decryptData } from "~/pages/utils/decrypt";
 
 const config = useRuntimeConfig();
 
-export const useQrStore = defineStore("qrcode", {
+export const useQrStore = defineStore("qr-xendit", {
   state() {
     return {
       qrcodes: [],
@@ -33,7 +33,7 @@ export const useQrStore = defineStore("qrcode", {
       try {
         this.isLoading = true;
         const response = await axios.get(`${config.public.apiBase}/qr_code`);
-        this.qrcodes = decryptData(response.data.data)
+        this.qrcodes = decryptData(response.data.data);
       } catch (error) {
         console.error("Error fetching bank data:", error);
       } finally {

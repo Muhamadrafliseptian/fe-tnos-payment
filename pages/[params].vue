@@ -41,7 +41,7 @@ const data = [
   {
     "id": "qr-xendit",
     "title": "QRIS",
-    "icon" : "mdi mdi-qrcode",
+    "icon": "mdi mdi-qrcode",
     "saldo": "lorem ipsum dolor sit amet"
   },
   {
@@ -71,16 +71,25 @@ const handleCardClick = (id) => {
   }
 }
 
-const postXenditQr = (fullParams, amountPrice) => {
-  loading.value = true;
-  
-  if (!localStorage.getItem("qrXendit")) {
-    const amount = (amountPrice * 1).toFixed(2).toString();
+const postXenditQr = (fullParams, amount) => {
 
-    
+  loading.value = true;
+
+  if (!localStorage.getItem("qr-xendit")) {
+    axios.post(`${config.public.apiBase}/payment/qrcode`, {
+      amount
+    }).then((response) => {
+      loading.value = false;
+
+      router.push("payment/qr-xendit");
+      localStorage.setItem("qr-xendit", JSON.stringify(response.data));
+    }).catch((error) => {
+      console.log(error);
+    })
   } else {
     loading.value = false;
-    router.push(`/payment/qrcode`);
+
+    router.push("payment/qr-xendit");
   }
 }
 
