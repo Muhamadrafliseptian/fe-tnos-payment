@@ -20,10 +20,10 @@ import { ref } from 'vue';
 const router = useRouter();
 const config = useRuntimeConfig();
 const loading = ref(false);
-const fullParams = router.currentRoute.value.fullPath;
-const urlParams = router.currentRoute.value.fullPath.split('/').slice(1).join('/')
-const splitAmount = urlParams.split('|')[1]
-const encryptAmount = CryptoJS.AES.decrypt(atob(splitAmount), "U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0=").toString(CryptoJS.enc.Utf8)
+// const fullParams = router.currentRoute.value.fullPath;
+// const urlParams = router.currentRoute.value.fullPath.split('/').slice(1).join('/')
+// const splitAmount = urlParams.split('|')[1]
+// const encryptAmount = CryptoJS.AES.decrypt(atob(splitAmount), "U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0=").toString(CryptoJS.enc.Utf8)
 
 const data = [
   {
@@ -59,39 +59,57 @@ const data = [
 ];
 
 const handleCardClick = (id) => {
+  
   if (id === "qrcode") {
     postClick(fullParams, encryptAmount);
 
   } else if (id === "qr-xendit") {
 
-    postXenditQr(fullParams, encryptAmount);
+    postXenditQr(10000, 200000)
+    // postXenditQr(fullParams, encryptAmount);
 
   } else {
-    router.push(`/payment/${id}/${urlParams}`);
+    router.push(`/payment/${id}`);
   }
 }
 
-const postXenditQr = (fullParams, amount) => {
+const postXenditQr = (amount, reference) => {
 
-  loading.value = true;
+  loading.value = true
 
   if (!localStorage.getItem("qr-xendit")) {
-    axios.post(`${config.public.apiBase}/payment/qrcode`, {
-      amount
-    }).then((response) => {
-      loading.value = false;
+    axios.post(`http://127.0.0.1:3001/xendit/qr-xendit`).then((response) => {
+      loading.value = false
 
-      router.push("payment/qr-xendit");
+      router.push('/payment/qr-xendit-test/10000|200000/ID_DANA')
       localStorage.setItem("qr-xendit", JSON.stringify(response.data));
-    }).catch((error) => {
-      console.log(error);
     })
-  } else {
-    loading.value = false;
-
-    router.push("payment/qr-xendit");
   }
+
 }
+
+// const postXenditQr = (fullParams, amount) => {
+
+//   console.log(amount);
+  // loading.value = true;
+
+  // if (!localStorage.getItem("qr-xendit")) {
+  //   axios.post(`${config.public.apiBase}/payment/qrcode`, {
+  //     amount
+  //   }).then((response) => {
+  //     loading.value = false;
+
+  //     router.push(`/payment/qr-xendit/${urlParams}/ID_DANA`);
+  //     localStorage.setItem("qr-xendit", JSON.stringify(response.data));
+  //   }).catch((error) => {
+  //     console.log(error);
+  //   })
+  // } else {
+  //   loading.value = false;
+
+  //   router.push(`/payment/qr-xendit/${urlParams}/ID_DANA`);
+  // }
+// }
 
 const postClick = (fullParams, amountPrice) => {
   loading.value = true;

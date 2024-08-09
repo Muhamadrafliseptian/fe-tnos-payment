@@ -33,7 +33,8 @@ export const useQrStore = defineStore("qr-xendit", {
       try {
         this.isLoading = true;
         const response = await axios.get(`${config.public.apiBase}/qr_code`);
-        this.qrcodes = decryptData(response.data.data);
+        console.log(response);
+        // this.qrcodes = decryptData(response.data.data);
       } catch (error) {
         console.error("Error fetching bank data:", error);
       } finally {

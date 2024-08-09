@@ -8,10 +8,29 @@
   </div>
 </template>
 
-<script setup>
-import { useRedirect } from "@/stores/statePayment/useRedirect";
+<script>
+export default {
+  data() {
+    return {
+      message: '',
+    };
+  },
+  mounted() {
+    // Cek apakah $socket terdefinisi
+    if (this.$socket) {
+      this.$socket.on('connect', () => {
+        console.log('Connected to WebSocket server');
+      });
 
-const vaStore = useRedirect();
-
-const paymentSuccess = vaStore.paymentsuccess;
+      this.$socket.on('messageToClient', (payload) => {
+        this.message = payload;
+        console.log('Message from server:', payload);
+      });
+    } else {
+      console.error('Socket not initialized');
+    }
+    
+    console.log("Ada");
+  },
+};
 </script>

@@ -29,6 +29,8 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.PORT_BE
     }
-  }
+  },
+  plugins: [
+    '~/plugins/socket.js'
+  ],
 })
-

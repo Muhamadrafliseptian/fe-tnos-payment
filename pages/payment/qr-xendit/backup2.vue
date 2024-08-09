@@ -134,19 +134,19 @@ const getData = () => {
             return;
         }
         const externalId = getValueFromLocalStorage(
-            route.params.id,
+            "ID_DANA",
             "external_id"
         );
         axios
             .get(
-                `http://localhost:3001/payment/INV-TNOS123/ID_DANA/tnos-rq6eti/get`
+                `http://localhost:3001/payment/INV-TNOS123/ID_DANA/tnos-jlext5/get`
             )
             .then((response) => {
                 if (paymentProcessed) {
                     return;
                 }
                 const expiredDate = getValueFromLocalStorage(
-                    route.params.id,
+                    "ID_DANA",
                     "expired_date"
                 );
 
@@ -172,6 +172,8 @@ const getData = () => {
                 waktu.value = `${menit} menit - ${detik} detik`;
 
                 countdown.value = waktu.value;
+
+                console.log(sisaWaktu);
 
                 // if (sisaWaktu < 0) {
                 //     removeKeyFromLocalStorage("ID_DANA");

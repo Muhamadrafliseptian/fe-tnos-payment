@@ -129,19 +129,30 @@ onUnmounted(() => {
 const getData = () => {
     try {
 
-        console.log(route.params);
         if (paymentProcessed) {
             return;
         }
+
+        const json = JSON.parse(localStorage.getItem("qr-xendit"))
+
         const externalId = getValueFromLocalStorage(
             route.params.id,
             "external_id"
         );
+
+        console.log("ExternalID");
+        console.log(externalId);
+
         axios
             .get(
-                `http://localhost:3001/payment/INV-TNOS123/ID_DANA/tnos-rq6eti/get`
+                `http://localhost:3001/payment/INV-TNOS123/${route.params.id}/${json.external_id}/get`
             )
             .then((response) => {
+
+                const decryptedValue = CryptoJS.AES.decrypt(response.data,"U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0=").toString(CryptoJS.enc.Utf8);
+
+                console.log("Tanggal");
+                console.log(decryptedValue.expiration_date);
                 if (paymentProcessed) {
                     return;
                 }
@@ -150,7 +161,7 @@ const getData = () => {
                     "expired_date"
                 );
 
-                const expirationDateUTC = new Date(response.data.expiration_date);
+                const expirationDateUTC = new Date(decryptedValue.expiration_date);
 
                 const options = { timeZone: "Asia/Jakarta" };
                 const expirationDateLocal = expirationDateUTC.toLocaleString(
@@ -164,6 +175,7 @@ const getData = () => {
 
                 const datess = new Date();
 
+                console.log(datess);
                 const sisaWaktu = expirationDates.value - datess;
 
                 const menit = Math.floor(sisaWaktu / (1000 * 60));
@@ -172,6 +184,8 @@ const getData = () => {
                 waktu.value = `${menit} menit - ${detik} detik`;
 
                 countdown.value = waktu.value;
+
+                console.log(sisaWaktu);
 
                 // if (sisaWaktu < 0) {
                 //     removeKeyFromLocalStorage("ID_DANA");
@@ -199,8 +213,7 @@ const clearVirtualAccountData = () => {
 };
 
 const getValueFromLocalStorage = (channelCode, fieldName) => {
-    const dataQr = JSON.parse(localStorage.getItem("qr-xendit")) || {};
-    const encryptedValue = dataQr[channelCode]?.[fieldName];
+    const encryptedValue = JSON.parse(localStorage.getItem("qr-xendit")) || {};
 
     if (encryptedValue) {
         try {
@@ -209,10 +222,9 @@ const getValueFromLocalStorage = (channelCode, fieldName) => {
                 "U2FsdGVkX1+RFxINtDchhPqAxYecNts3Di1tTgbwHg0="
             ).toString(CryptoJS.enc.Utf8);
 
-            console.log("Makananan");
             return decryptedValue;
         } catch (error) {
-            console.error(`Error decrypting ${fieldName}:`, error.message || error);
+            console.error(`Error decrypting:`, error.message || error);
             return null;
         }
     }
@@ -229,55 +241,3 @@ const removeKeyFromLocalStorage = (channelCode) => {
     }
 };
 </script>
-<!-- <template>
-      <v-container fluid>
-        <div class="d-flex">
-          <div class="me-3">
-            <b>
-              <v-icon icon="mdi mdi-keyboard-backspace" class="mb-3" @click="router.go(-1)" color="black"></v-icon>
-            </b>
-          </div>
-          <h6 class="mb-5">Bayar Dengan QRIS</h6>
-        </div>
-        <v-row justify="center">
-          <v-col cols="12" sm="8" md="6" lg="4">
-            <v-card class="qr-card" elevation="3">
-              <v-img :src="qrImage" alt="QR Code Image" class="qr-image" />
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </template>
-    
-    <script setup>
-    import { onMounted, ref } from 'vue';
-    
-    const qrMerchant = ref("");
-    const qrImage = ref("");
-    const router = useRouter()
-    onMounted(() => {
-      const qrcode = JSON.parse(localStorage.getItem("qrcodeData"));
-      if (qrcode) {
-        qrMerchant.value = qrcode.responseBcaQris.merchantName;
-        qrImage.value = qrcode.responseBcaQris.qrImage;
-        toBase64();
-      }
-    });
-    
-    const toBase64 = () => {
-      qrImage.value = `data:image/png;base64, ${qrImage.value}`;
-    };
-    </script>
-    
-    <style scoped>
-    .qr-card {
-      max-width: 400px;
-      margin: 0 auto;
-    }
-    .qr-image {
-      width: 100%;
-      border-top-left-radius: 4px;
-      border-top-right-radius: 4px;
-    }
-    </style>
-     -->

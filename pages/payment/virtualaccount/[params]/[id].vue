@@ -96,8 +96,14 @@ const getData = async () => {
     }
 
     const decrypt = decryptData(response.data);
+    
+    console.log("Params : ");
+    console.log(route.params.id);
 
     const expiredDate = getValueFromLocalStorage(route.params.id, 'expired_date');
+
+    console.log("Tanggal Expire :");
+    console.log(expiredDate);
 
     const expirationDateUTC = new Date(decrypt.expiration_date);
     const options = { timeZone: "Asia/Jakarta" };
@@ -151,6 +157,9 @@ const clearVirtualAccountData = () => {
 const getValueFromLocalStorage = (bankCode, fieldName) => {
   const dataVirtualAccount =
     JSON.parse(localStorage.getItem("virtualAccountData")) || {};
+
+  console.log("Virtual Accounts Data");
+  console.log(dataVirtualAccount[bankCode]?.[fieldName]);
   const encryptedValue = dataVirtualAccount[bankCode]?.[fieldName];
 
   if (encryptedValue) {
